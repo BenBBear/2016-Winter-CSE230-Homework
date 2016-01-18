@@ -54,7 +54,7 @@ uses the following convention:
 >     do w <- openWindow 
 >               "My First Graphics Program" (300,300)
 >        drawInWindow w (text (100,200) "Hello Graphics World")
->        k <- getKey w
+>        k <- getKeyEx w True
 >        closeWindow w
 >     )
 
@@ -62,7 +62,7 @@ uses the following convention:
 
 > spaceClose :: Window -> IO ()
 > spaceClose w
->   = do k <- getKey w
+>   = do k <- getKeyEx w True
 >        if k==' ' || k == '\x0'
 >           then closeWindow w
 >           else spaceClose w
@@ -90,7 +90,7 @@ uses the following convention:
 <            | Red | Magenta | Yellow | White
 
 > pic1 = withColor Red 
->          (ellipse (150,150) (300,200))
+>          (ellipse (250,250) (200,200))
 
 > pic2 = withColor Blue
 >          (polyline [(100,50),(200,50),

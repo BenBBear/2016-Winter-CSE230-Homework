@@ -1,5 +1,6 @@
 dist
 cabal-dev
+/cse230-haskell-read-only/
 *.o
 *.hi
 *.chi

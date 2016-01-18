@@ -40,6 +40,7 @@ module SOE (
   diffRegion,
   drawRegion,
   getKey,
+  getKeyEx,
   getLBP,
   getRBP,
   Event (..),

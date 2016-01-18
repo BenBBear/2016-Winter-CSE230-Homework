@@ -12,6 +12,12 @@ module Hw1 where
 import SOE
 import Play
 import XMLTypes
+import Control.Monad
+import Prelude hiding (catch)
+import Control.Exception
+import System.Random
+import Debug.Trace
+
 
 -- Part 0: All About You
 -- ---------------------
@@ -19,9 +25,9 @@ import XMLTypes
 -- Tell us your name, email and student ID, by replacing the respective
 -- strings below
 
-myName  = "Write Your Name  Here"
-myEmail = "Write Your Email Here"
-mySID   = "Write Your SID   Here"
+myName  = "Xinyu Zhang"
+myEmail = "xiz368@eng.ucsd.edu"
+mySID   = "A53095838"
 
 -- Part 1: Defining and Manipulating Shapes
 -- ----------------------------------------
@@ -46,16 +52,28 @@ type Vertex = (Float, Float)
 --    at the end of Section 2.1 (Exercise 2.1). Each should return a Shape
 --    built with the Polygon constructor.
 
+
+
 rectangle :: Side -> Side -> Shape
-rectangle = error "Define me!"
+rectangle x y = Polygon [(0,0),(x,0),(0,y),(x,y)]
 
 rtTriangle :: Side -> Side -> Shape
-rtTriangle = error "Define me!"
+rtTriangle x y = Polygon [(0,0),(x,0),(y,0)]
 
 -- 2. Define a function
 
 sides :: Shape -> Int
-sides = error "Define me!"
+sides (Rectangle _ _ ) = 2
+sides (Ellipse _ _ ) = 42
+sides (RtTriangle _ _) = 3
+sides (Polygon
+       []) = 0
+sides (Polygon
+       (x:[])) = 0
+sides (Polygon
+      (x:y:[])) = 0
+
+sides (Polygon lst) = length lst
 
 --   which returns the number of sides a given shape has.
 --   For the purposes of this exercise, an ellipse has 42 sides,
@@ -64,7 +82,13 @@ sides = error "Define me!"
 -- 3. Define a function
 
 bigger :: Shape -> Float -> Shape
-bigger = error "Define me!"
+bigger (Polygon lst) e = (Polygon [(x*f,y*f) | (x,y) <- lst])
+  where f = sqrt e
+
+bigger (Rectangle x y) e = (Rectangle (x*f) (y*f)) where f = sqrt e
+bigger (Ellipse x y) e = (Ellipse (x*f) (y*f)) where f = sqrt e
+bigger (RtTriangle x y) e = (RtTriangle (x*f) (y*f)) where f = sqrt e
+
 
 --   that takes a shape `s` and expansion factor `e` and returns
 --   a shape which is the same as (i.e., similar to in the geometric sense)
@@ -84,8 +108,20 @@ bigger = error "Define me!"
 
 --    Write a function
 
+hmove :: String -> String -> IO ()
+hmove x y = putStrLn $ "move disc from " ++ x ++ " to " ++ y
+
+
 hanoi :: Int -> String -> String -> String -> IO ()
-hanoi = error "Define me!"
+hanoi num a b c
+  | num == 0 = putStrLn "Do Nothing"
+  | num == 1 = hmove a b
+  | otherwise = do hanoi (num-1) a c b
+                   hmove a b
+                   hanoi (num-1) c b a
+
+                     
+
 
 --   that, given the number of discs $n$ and peg names $a$, $b$, and $c$,
 --   where a is the starting peg,
@@ -111,8 +147,52 @@ hanoi = error "Define me!"
 -- Write a function `sierpinskiCarpet` that displays this figure on the
 -- screen:
 
+mapTuple :: (a -> b) -> (a, a) -> (b, b)
+mapTuple f (a1, a2) = (f a1, f a2)
+
+spaceClose :: Window -> IO ()
+spaceClose w  = do k <- getKey w
+                   if k ==' ' || k == '\x0'
+                     then closeWindow w
+                     else spaceClose w
+
+fillRect :: Window -> (Int,Int) -> Int -> IO()
+fillRect w (x0,y0) s =
+    drawInWindow w (withColor Blue
+                        (polygon [(x0,y0),(x0+s,y0),(x0,y0+s),(x0+s,y0+s)]))
+
+winSize = 256
+offset = 20
 sierpinskiCarpet :: IO ()
-sierpinskiCarpet = error "Define me!"
+sierpinskiCarpet = runGraphics (
+     do w <- openWindow 
+               "sierpinskiCarpet" (winSize, winSize)
+        sct' w (offset,offset) (winSize - (2 * offset))
+        spaceClose w
+     )
+
+minSize = 2
+
+sct':: Window -> (Int, Int) -> Int -> IO()
+sct' w (x,y) len = if len <= minSize
+                                then
+                                    do
+                                     fillRect w (x,y) len
+                                else
+                                    do
+                                      sct' w (x,y) s
+                                      sct' w (x+s,y) s
+                                      sct' w (x,y+s) s
+                                      sct' w (x + (2*s),y) s
+                                      sct' w (x, (2*s)+y) s
+                                      sct' w (x+s, (2*s)+y) s
+                                      sct' w (x+(2*s), s+y) s
+                                      sct' w (x+(2*s), (2*s)+y) s
+                                    where
+                                        s = len `div` 3
+
+
+
 
 -- Note that you either need to run your program in `SOE/src` or add this
 -- path to GHC's search path via `-i/path/to/SOE/src/`.
@@ -123,8 +203,50 @@ sierpinskiCarpet = error "Define me!"
 --    own design.  Be creative!  The only constraint is that it shows some
 --    pattern of recursive self-similarity.
 
+-- Use some random stuff here!
+mfSize = 256
 myFractal :: IO ()
-myFractal = error "Define me!"
+myFractal = runGraphics(do
+            do w <- openWindow "Maya" (mfSize, mfSize)
+               mf'  w (0,0)  mfSize Red
+               spaceClose w )
+
+flipCoin::IO Integer
+flipCoin = do x <- randomRIO (1, 2)
+              return x
+
+fillRectC :: Window -> (Int,Int) -> Int -> Color -> IO()
+fillRectC w (x0,y0) s c =
+    drawInWindow w (withColor c
+                        (polygon [(x0,y0),(x0+s,y0),(x0,y0+s),(x0+s,y0+s)]))
+
+minRadius = 2
+mf':: Window -> (Int, Int) -> Int -> Color -> IO()
+mf' w (x,y) r c = if r <= minRadius then
+                    fillRectC w (x,y) r c
+                  else
+                    do
+                      fillRectC w (x,y) r c
+                      coin <- flipCoin
+                      if coin == 1 then
+                        do
+                          mf' w (x+hhr,y) hr nc
+                          mf' w (x+hhr,y+hr) hr nc
+                      else
+                        do
+
+                          mf' w (x,y+hhr) hr nc
+                          mf' w (x+hr,y+hhr) hr nc
+                       where
+                           nc = (if c == Red then Blue else Red)
+                           hr = (r `div` 2)
+                           hhr = (r `div` 4)
+
+
+
+
+
+
 
 -- Part 3: Recursion Etc.
 -- ----------------------
@@ -137,60 +259,66 @@ myFractal = error "Define me!"
 -- Write a *non-recursive* function to compute the length of a list
 
 lengthNonRecursive :: [a] -> Int
-lengthNonRecursive = error "Define me!"
+lengthNonRecursive = sum . map (\_ -> 1)
 
 -- `doubleEach [1,20,300,4000]` should return `[2,40,600,8000]`
 
 doubleEach :: [Int] -> [Int]
-doubleEach = error "Define me!"
+doubleEach [] = []
+doubleEach (h:r)= (h*2):(doubleEach r)
 
 -- Now write a *non-recursive* version of the above.
 
 doubleEachNonRecursive :: [Int] -> [Int]
-doubleEachNonRecursive = error "Define me!"
+doubleEachNonRecursive = map (\x -> (2*x))
 
 -- `pairAndOne [1,20,300]` should return `[(1,2), (20,21), (300,301)]`
 
 pairAndOne :: [Int] -> [(Int, Int)]
-pairAndOne = error "Define me!"
+pairAndOne [] = []
+pairAndOne (x:xs) =  (x,x+1):(pairAndOne xs)
 
 
 -- Now write a *non-recursive* version of the above.
 
 pairAndOneNonRecursive :: [Int] -> [(Int, Int)]
-pairAndOneNonRecursive = error "Define me!"
+pairAndOneNonRecursive = map (\x -> (x,x+1))
 
 -- `addEachPair [(1,2), (20,21), (300,301)]` should return `[3,41,601]`
 
 addEachPair :: [(Int, Int)] -> [Int]
-addEachPair = error "Define me!"
+addEachPair [] = []
+addEachPair (x:xs) = ((snd x) + (fst x)):(addEachPair xs)
 
 -- Now write a *non-recursive* version of the above.
 
 addEachPairNonRecursive :: [(Int, Int)] -> [Int]
-addEachPairNonRecursive = error "Define me!"
+addEachPairNonRecursive = map (\x -> (snd x) + (fst x) )
 
 -- `minList` should return the *smallest* value in the list. You may assume the
 -- input list is *non-empty*.
 
 minList :: [Int] -> Int
-minList = error "Define me!"
+minLst (x) = x
+minList (x:xs)= min x (minList xs)
 
 -- Now write a *non-recursive* version of the above.
 
 minListNonRecursive :: [Int] -> Int
-minListNonRecursive = error "Define me!"
+minListNonRecursive lst = foldr (\ x y -> if x<y then x else y) (head lst) lst
 
 -- `maxList` should return the *largest* value in the list. You may assume the
 -- input list is *non-empty*.
 
 maxList :: [Int] -> Int
-maxList = error "Define me!"
+maxLst (x) = x
+maxList (x:xs)= max x (maxList xs)
+
 
 -- Now write a *non-recursive* version of the above.
 
 maxListNonRecursive :: [Int] -> Int
-maxListNonRecursive = error "Define me!"
+maxListNonRecursive lst = foldr (\ x y -> if x>y then x else y) (head lst) lst
 
 -- Now, a few functions for this `Tree` type.
 
@@ -201,19 +329,22 @@ data Tree a = Leaf a | Branch (Tree a) (Tree a)
 -- So: `fringe (Branch (Leaf 1) (Leaf 2))` should return `[1,2]`
 
 fringe :: Tree a -> [a]
-fringe = error "Define me!"
+fringe (Leaf l) = [l]
+fringe (Branch b1 b2)= (fringe b1)++(fringe b2)
 
 -- `treeSize` should return the number of leaves in the tree.
 -- So: `treeSize (Branch (Leaf 1) (Leaf 2))` should return `2`.
 
 treeSize :: Tree a -> Int
-treeSize = error "Define me!"
+treeSize (Leaf _) = 1
+treeSize (Branch b1 b2)= (treeSize b1)+(treeSize b2)
 
 -- `treeSize` should return the height of the tree.
 -- So: `height (Branch (Leaf 1) (Leaf 2))` should return `1`.
 
 treeHeight :: Tree a -> Int
-treeHeight = error "Define me!"
+treeHeight (Leaf _) = 0
+treeHeight (Branch b1 b2) = (max (treeHeight b1) (treeHeight b2))+1
 
 -- Now, a tree where the values live at the nodes not the leaf.
 
@@ -221,23 +352,43 @@ data InternalTree a = ILeaf | IBranch a (InternalTree a) (InternalTree a)
                       deriving (Show, Eq)
 
 -- `takeTree n t` should cut off the tree at depth `n`.
--- So `takeTree 1 (IBranch 1 (IBranch 2 ILeaf ILeaf) (IBranch 3 ILeaf ILeaf)))`
+-- So `takeTree 1 (IBranch 1 (IBranch 2 ILeaf ILeaf) (IBranch 3 ILeaf ILeaf))`
 -- should return `IBranch 1 ILeaf ILeaf`.
 
 takeTree :: Int -> InternalTree a -> InternalTree a
-takeTree = error "Define me!"
+takeTree maxdepth tree = takeTree' maxdepth 0 tree
+
+
+takeTree' :: Int -> Int -> InternalTree a -> InternalTree a
+takeTree' maxdepth depth (IBranch v b1 b2) = if depth < maxdepth then
+                                                    (IBranch v
+                                                        (takeTree' maxdepth nd b1)
+                                                        (takeTree' maxdepth nd b2))
+                                                 else
+                                                    ILeaf
+                                                 where
+                                                    nd = depth + 1
 
 -- `takeTreeWhile p t` should cut of the tree at the nodes that don't satisfy `p`.
 -- So: `takeTreeWhile (< 3) (IBranch 1 (IBranch 2 ILeaf ILeaf) (IBranch 3 ILeaf ILeaf)))`
 -- should return `(IBranch 1 (IBranch 2 ILeaf ILeaf) ILeaf)`.
 
 takeTreeWhile :: (a -> Bool) -> InternalTree a -> InternalTree a
-takeTreeWhile = error "Define me!"
+takeTreeWhile p (IBranch v b1 b2) = if (p v) then
+                                        (IBranch v
+                                              (takeTreeWhile p b1)
+                                              (takeTreeWhile p b2))
+                                        else
+                                            ILeaf
 
 -- Write the function map in terms of foldr:
 
 myMap :: (a -> b) -> [a] -> [b]
-myMap = error "Define me!"
+myMap _ [] = []
+myMap f lst = foldr (_mapWrapper f) [] lst
+
+_mapWrapper::(a->b) -> (a->[b]->[b])
+_mapWrapper f = (\a arr -> (f a) : arr)
 
 -- Part 4: Transforming XML Documents
 -- ----------------------------------
@@ -328,8 +479,40 @@ myMap = error "Define me!"
 -- yields the HTML speciﬁed above (but with no whitespace except what's
 -- in the textual data in the original XML).
 
+
+--
+header :: Int -> String
+header h =  ("h" ++ (show h))
+
+defaultTitle = [(Element "h2" [(PCDATA "Dramatis Personae")])];
+
+processXML :: SimpleXML -> [SimpleXML]
+processXML  node = processXML' node 1
+
+
+processXML' :: SimpleXML -> Int -> [SimpleXML]
+processXML' (PCDATA str) _ = [(PCDATA str)]
+processXML' (Element name children) level = let l = (if (name `elem` ["ACT", "SCENE"]) then level+1 else level)
+                                                            in
+                                                               trace ("processXML'   "++name)
+                                                               tagSwitch' (Element name children) l
+
+tagSwitch' :: SimpleXML -> Int -> [SimpleXML]
+tagSwitch' (Element name children) level
+        | name == "TITLE" = (if level == 1 then  [(Element (header level) (p children))]++defaultTitle
+                                           else  [(Element (header level) (p children))])
+        | name == "SPEAKER" = trace "tagSwitch" [(Element "b" (p children)),(PCDATA "<br/>")]
+        | name `elem` ["LINE","PERSONA"]  =  trace "tagSwitch" (p children) ++ [(PCDATA "<br/>")]
+        | otherwise =  trace "tagSwitch" (p children)
+        where
+            p = \childs -> (concat (map (\c -> processXML' c level) childs))
+
+
+
+
+
 formatPlay :: SimpleXML -> SimpleXML
-formatPlay xml = PCDATA "WRITE ME!"
+formatPlay (Element _ xmls) = Element "html" [Element "body" (concat (map processXML xmls))]
 
 -- The main action that we've provided below will use your function to
 -- generate a ﬁle `dream.html` from the sample play. The contents of this

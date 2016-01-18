@@ -9,6 +9,7 @@ extra-deps:
 - ObjectName-1.1.0.1
 - OpenGL-2.13.2.1
 - OpenGLRaw-2.6.1.1
+- random-1.1
 
 packages:
 - .
