@@ -120,7 +120,7 @@ hanoi num a b c
                    hmove a b
                    hanoi (num-1) c b a
 
-                     
+
 
 
 --   that, given the number of discs $n$ and peg names $a$, $b$, and $c$,
@@ -161,17 +161,17 @@ fillRect w (x0,y0) s =
     drawInWindow w (withColor Blue
                         (polygon [(x0,y0),(x0+s,y0),(x0,y0+s),(x0+s,y0+s)]))
 
-winSize = 256
+winSize = 300
 offset = 20
 sierpinskiCarpet :: IO ()
 sierpinskiCarpet = runGraphics (
-     do w <- openWindow 
+     do w <- openWindow
                "sierpinskiCarpet" (winSize, winSize)
         sct' w (offset,offset) (winSize - (2 * offset))
         spaceClose w
      )
 
-minSize = 2
+minSize = 8
 
 sct':: Window -> (Int, Int) -> Int -> IO()
 sct' w (x,y) len = if len <= minSize
@@ -299,7 +299,8 @@ addEachPairNonRecursive = map (\x -> (snd x) + (fst x) )
 -- input list is *non-empty*.
 
 minList :: [Int] -> Int
-minLst (x) = x
+minList [] = error "EmptyList"
+minList [x] = x
 minList (x:xs)= min x (minList xs)
 
 -- Now write a *non-recursive* version of the above.
@@ -311,7 +312,8 @@ minListNonRecursive lst = foldr (\ x y -> if x<y then x else y) (head lst) lst
 -- input list is *non-empty*.
 
 maxList :: [Int] -> Int
-maxLst (x) = x
+maxList [] = error "EmptyList"
+maxList (x:[]) = x
 maxList (x:xs)= max x (maxList xs)
 
 
@@ -370,7 +372,7 @@ takeTree' maxdepth depth (IBranch v b1 b2) = if depth < maxdepth then
                                                     nd = depth + 1
 
 -- `takeTreeWhile p t` should cut of the tree at the nodes that don't satisfy `p`.
--- So: `takeTreeWhile (< 3) (IBranch 1 (IBranch 2 ILeaf ILeaf) (IBranch 3 ILeaf ILeaf)))`
+-- So: `takeTreeWhile (< 3) (IBranch 1 (IBranch 2 ILeaf ILeaf) (IBranch 3 ILeaf ILeaf))`
 -- should return `(IBranch 1 (IBranch 2 ILeaf ILeaf) ILeaf)`.
 
 takeTreeWhile :: (a -> Bool) -> InternalTree a -> InternalTree a
@@ -380,6 +382,7 @@ takeTreeWhile p (IBranch v b1 b2) = if (p v) then
                                               (takeTreeWhile p b2))
                                         else
                                             ILeaf
+takeTreeWhile _ (ILeaf) = ILeaf
 
 -- Write the function map in terms of foldr:
 
@@ -494,22 +497,24 @@ processXML' :: SimpleXML -> Int -> [SimpleXML]
 processXML' (PCDATA str) _ = [(PCDATA str)]
 processXML' (Element name children) level = let l = (if (name `elem` ["ACT", "SCENE"]) then level+1 else level)
                                                             in
-                                                               trace ("processXML'   "++name)
+--                                                               trace ("processXML'   "++name)
                                                                tagSwitch' (Element name children) l
 
 tagSwitch' :: SimpleXML -> Int -> [SimpleXML]
 tagSwitch' (Element name children) level
         | name == "TITLE" = (if level == 1 then  [(Element (header level) (p children))]++defaultTitle
                                            else  [(Element (header level) (p children))])
-        | name == "SPEAKER" = trace "tagSwitch" [(Element "b" (p children)),(PCDATA "<br/>")]
-        | name `elem` ["LINE","PERSONA"]  =  trace "tagSwitch" (p children) ++ [(PCDATA "<br/>")]
-        | otherwise =  trace "tagSwitch" (p children)
+        | name == "SPEAKER" =
+                             --        trace "tagSwitch"
+                              [(Element "b" (p children)),(PCDATA "<br/>")]
+        | name `elem` ["LINE","PERSONA"]  =
+--                                            trace "tagSwitch"
+                                            (p children) ++ [(PCDATA "<br/>")]
+        | otherwise =
+--         trace "tagSwitch"
+                         (p children)
         where
             p = \childs -> (concat (map (\c -> processXML' c level) childs))
-
-
-
-
 
 formatPlay :: SimpleXML -> SimpleXML
 formatPlay (Element _ xmls) = Element "html" [Element "body" (concat (map processXML xmls))]
