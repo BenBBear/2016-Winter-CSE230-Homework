@@ -3,8 +3,10 @@
 -- ---
 
 {-# LANGUAGE TypeSynonymInstances #-}
-module Hw2 where
+{-# LANGUAGE FlexibleContexts #-}
 
+module Hw2 where
+import Debug.Trace
 import Control.Applicative hiding (empty, (<|>))
 import qualified Data.Map
 import Control.Monad.State hiding (when)
@@ -12,6 +14,8 @@ import Text.Parsec hiding (State, between)
 import Text.Parsec.Combinator hiding (between)
 import Text.Parsec.Char
 import Text.Parsec.String
+import Data.Maybe
+-- import Data.Char
 
 -- Problem 0: All About You
 -- ========================
@@ -34,21 +38,29 @@ mySID   = "A53095838"
 myFoldl :: (a -> b -> a) -> a -> [b] -> a
 myFoldl f b [] = b
 myFoldl f b (x:xs) =  (myFoldl f b xs)  `f` x
+-- TEST: myFoldl (\x y -> x+y) 1  [1,2,3,4]
 
 -- 2. Using the standard `foldl` (not `myFoldl`), define the list reverse function:
 
 myReverse :: [a] -> [a]
 myReverse  = foldl (flip (:)) []
+-- TEST: myReverse [1,2,3,4]
+
 
 -- 3. Define `foldr` in terms of `foldl`:
 
 myFoldr :: (a -> b -> b) -> b -> [a] -> b
 myFoldr f b xs = foldl (flip f) b (reverse xs)
+-- TEST: myFoldr (\x y -> x++y) "2"  ["1","2","3","4"]
+
 
 -- 4. Define `foldl` in terms of the standard `foldr` (not `myFoldr`):
 
+
+
 myFoldl2 :: (a -> b -> a) -> a -> [b] -> a
 myFoldl2 f b xs = foldr (flip f) b (reverse xs)
+-- TEST: myFoldl2 (\x y -> x++y) "2"  ["1","2","3","4"]
 
 -- 5. Try applying `foldl` to a gigantic list. Why is it so slow?
 --    Try using `foldl'` (from [Data.List](http://www.haskell.org/ghc/docs/latest/html/libraries/base/Data-List.html#3))
@@ -67,23 +79,25 @@ data BST k v = Emp
 
 delete :: (Ord k) => k -> BST k v -> BST k v
 delete _ Emp = Emp
-delete fk (Bind k v n1 n2)
-        | fk > k =   Bind k v  n1 (delete fk n2)
-        | fk < k = Bind k v  n1 (delete fk n2)
-        | otherwise = treeMerge n1 n2
+delete k (Bind k' _ Emp r) | k == k' = r
+delete k (Bind k' _ l Emp) | k == k' = l
+delete k (Bind k' v' l r)
+   | k <  k'   = Bind k' v' (delete k l) r
+   | k >  k'   = Bind k' v' l (delete k r)
+   | otherwise = Bind key value l' r
+                 where (key,value) = maxKey l
+                       l'          = delete key l
 
-insert :: (Ord k) => k -> v -> BST k v -> BST k v
-insert k v Emp = Bind k v Emp Emp
-insert k v (Bind k' v' l r)
-    | k == k'      = Bind k v l r
-    | k <  k'      = Bind k' v' (insert k v l) r
-    | otherwise    = Bind k' v' l (insert k v r)
+maxKey ::  (BST k v) -> (k,v)
+maxKey Emp = error "Never Reach here, since the `delete _ Emp = Emp`"
+maxKey (Bind k v _ Emp) = (k,v)
+maxKey (Bind _ _ _ r) = maxKey r
 
-treeMerge :: (Ord k) =>  BST k v -> BST k v -> BST k v
-treeMerge Emp Emp = Emp
-treeMerge Emp t = t
-treeMerge t Emp = t
-treeMerge t (Bind k v n1 n2) =   treeMerge (treeMerge (insert k v t)  n1) n2
+-- TEST:
+-- x = Bind "chimichanga" 5.25
+--   (Bind "burrito" 4.5 Emp Emp)
+--   (Bind "frijoles" 2.75 Emp Emp)
+-- delete "burrito"  x
 
 
 -- Part 3: An Interpreter for WHILE
@@ -165,14 +179,28 @@ evalE :: Expression -> State Store Value
 
 evalOp :: Bop -> Value -> Value -> Value
 evalOp Plus (IntVal i) (IntVal j) = IntVal (i+j)
+evalOp Minus  (IntVal i) (IntVal j) = IntVal (i-j)
+evalOp Times  (IntVal i) (IntVal j) = IntVal (i*j)
+evalOp Divide (IntVal i) (IntVal j) = IntVal (i `div` j)
+evalOp Gt (IntVal i) (IntVal j) = BoolVal (i>j)
+evalOp Ge  (IntVal i) (IntVal j) = BoolVal (i>=j)
+evalOp Lt  (IntVal i) (IntVal j) = BoolVal (i<j)
+evalOp Le   (IntVal i) (IntVal j) = BoolVal (i<=j)
+
 
 -- >
 
-evalE (Var x)      = state (\st -> (zero,  Data.Map.insert x zero st))
-                            where   zero = IntVal 0
+evalVariable :: Maybe Value -> Value
+evalVariable  (Just x) = x
+evalVariable  Nothing  = IntVal 0  -- Dealing with exception here
 
 
-evalE (Val v)      = state (\mem -> (v,mem))
+evalE (Var x)      = do
+                        st <- get
+                        return (evalVariable (Data.Map.lookup x st))
+
+
+evalE (Val v)      = do return v
 
 
 evalE (Op o e1 e2) = do
@@ -199,8 +227,9 @@ evalS :: Statement -> State Store ()
 -- do `put s'`.
 
 evalS (Assign x e )    =  do
+                            st <- get
                             v <- evalE e
-                            put (Data.Map.insert x v Data.Map.empty)
+                            put (Data.Map.insert x v st)
                             return ()
 
 
@@ -289,6 +318,17 @@ w_fact = (Sequence (Assign "N" (Val (IntVal 2))) (Sequence (Assign "F" (Val (Int
 -- Parsing Constants
 -- -----------------
 
+myparse:: Parser a -> String -> Either ParseError a
+myparse p = parse p "Source"
+
+
+newlines :: Parser ()
+newlines = skipMany newline
+
+
+colons :: Parser ()
+colons = skipMany (char ';')
+
 -- First, we will write parsers for the `Value` type
 
 valueP :: Parser Value
@@ -296,25 +336,60 @@ valueP = intP <|> boolP
 
 -- To do so, fill in the implementations of
 
+
+
+
 intP :: Parser Value
-intP = error "TBD"
+intP =  do
+          -- kw <- string "IntVal"
+          spaces
+          digits <- many1 digit
+          return  (IntVal (read digits :: Int))
+
 
 -- Next, define a parser that will accept a
 -- particular string `s` as a given value `x`
 
 constP :: String -> a -> Parser a
-constP s x = error "TBD"
+constP s x = do
+                kw <- string s
+                return x
+
 
 -- and use the above to define a parser for boolean values
 -- where `"true"` and `"false"` should be parsed appropriately.
 
 boolP :: Parser Value
-boolP = error "TBD"
+boolP = do
+          -- kw <- string "BoolVal"
+          spaces
+          val <- (constP "\"true\"" True) <|>  (constP "\"false\"" False)
+          return (BoolVal val)
 
+
+
+
+
+        --   Plus     -- (+)  :: Int  -> Int  -> Int
+        -- | Minus    -- (-)  :: Int  -> Int  -> Int
+        -- | Times    -- (*)  :: Int  -> Int  -> Int
+        -- | Divide   -- (/)  :: Int  -> Int  -> Int
+        -- | Gt       -- (>)  :: Int -> Int -> Bool
+        -- | Ge       -- (>=) :: Int -> Int -> Bool
+        -- | Lt       -- (<)  :: Int -> Int -> Bool
+        -- | Le
 -- Continue to use the above to parse the binary operators
-
 opP :: Parser Bop
-opP = error "TBD"
+opP = constP "+" Plus
+      <|> constP "-" Minus
+      <|> constP "*" Times
+      <|> constP "/" Divide
+      <|> constP ">" Gt
+      <|> constP ">=" Ge
+      <|> constP "<" Lt
+      <|> constP "<=" Le
+
+
 
 
 -- Parsing Expressions
@@ -327,20 +402,168 @@ varP :: Parser Variable
 varP = many1 upper
 
 -- Use the above to write a parser for `Expression` values
+-- data Expression =
+--     Var Variable                        -- x
+--   | Val Value                           -- v
+--   | Op  Bop Expression Expression
+--   deriving (Show)
+
+
+-- data Expression =
+--     Var Variable                        -- x
+--   | Val Value                           -- v
+--   | Op  Bop Expression Expression
+--   deriving (Show)
+
+
+exprVar = do
+            spaces
+            var <- varP
+            colons
+            return (Var var)
+
+exprVal = do
+            spaces
+            val <- valueP
+            colons
+            return (Val val)
+
+
+
+
+parenP p = do
+              char '('
+              x <- p
+              char ')'
+              return x
+
+
+exprOp =  do
+             spaces
+             ex1 <-  (parenP exprP) <|> exprVal <|> exprVar
+             spaces
+             op <- opP
+             spaces
+             ex2 <-  (parenP exprP) <|> exprP
+             return (Op op ex1 ex2)
+
+
+
 
 exprP :: Parser Expression
-exprP = error "TBD"
+exprP =  try exprOp <|> exprVar <|> exprVal
 
 -- Parsing Statements
 -- ------------------
 
+
+
 -- Next, use the expression parsers to build a statement parser
+-- data Statement =
+--     Assign Variable Expression          -- x = e
+--   | If Expression Statement Statement   -- if (e) {s1} else {s2}
+--   | While Expression Statement          -- while (e) {s}
+--   | Sequence Statement Statement        -- s1; s2
+--   | Skip                                -- no-op
+--   deriving (Show)
+
+stAssign = do
+              spaces
+              var <- varP
+              spaces
+              kw <- string ":="
+              spaces
+              ex <- exprP
+              return (Assign  var ex)
+
+
+stIf = do
+        spaces
+        kwif <- string "if"
+        spaces
+        cond <- exprP
+        spaces
+        kwthen <- string "then"
+        newlines
+        stThen <- statementP
+        newlines
+        kwElse <- string "else"
+        newlines
+        stElse <- statementP
+        newlines
+        kwEnd <- string "endif"
+        return (If cond stThen  stElse)
+
+stWhile = do
+            spaces
+            kwWhile <- string "while"
+            spaces
+            cond <- exprP
+            spaces
+            kwdo <- string "do"
+            newlines
+            st <- statementP
+            newlines
+            spaces
+            kwEnd <- string "endwhile"
+            return (While cond st)
+
+
+-- skipP = newlines <|> spaces
+
+
+
+stSkip = do
+            spaces
+            kw <- string "skip"
+            return Skip
+
+-- 1. statementP 第一个不能=sequence
+-- 2. statementP 考虑 eof 问题
+maybeP:: Parser a -> Parser (Maybe a)
+maybeP p = do
+          x <- p
+          return (Just x)
+
+
+statementP' :: Parser Statement
+statementP' = try stAssign
+          <|> try stIf
+          <|> try stWhile
+          <|> try stSkip
+
+
+
+
+statementP'' :: Parser (Maybe Statement)
+statementP'' = maybeP statementP'  <|> return Nothing
+
+
+stSequence = do
+               mbst1 <- statementP''
+               if isNothing mbst1 then
+                    return Skip
+               else
+                 do
+                    colons
+                    newlines
+                    st2 <- statementP
+                    return (Sequence (fromMaybe Skip mbst1) st2)
+
 
 statementP :: Parser Statement
-statementP = error "TBD"
+statementP = stSequence
+            <|> statementP'
+            -- <|> return Skip
 
 -- When you are done, we can put the parser and evaluator together
 -- in the end-to-end interpreter function
+
+
+parseFile s =  do
+                  p <- parseFromFile statementP s
+                  print p
+
 
 runFile s = do p <- parseFromFile statementP s
                case p of
