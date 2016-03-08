@@ -1,0 +1,136 @@
+SAT 
+ 
+ 
+ 
+solution: k__1030 := [((VV#1029 = GHC.Prim.void##0l), Cmp0(VV#1029, GHC.Prim.void##0l))] 
+
+solution: k__1037 := [((VV#1036 != lq_anf__d1Ho), Cmp1(VV#1036, lq_anf__d1Ho));((VV#1036 != ds_d1FY), Cmp1(VV#1036, ds_d1FY));((size([VV#1036]) = (size([ds_d1FX]) + size([ds_d1FY]))), Auto12(VV#1036, ds_d1FX, ds_d1FY));((size([VV#1036]) = (size([ds_d1FY]) + size([lq_anf__d1Hd]))), Auto12(VV#1036, ds_d1FY, lq_anf__d1Hd));((size([VV#1036]) = (size([ds_d1FY]) + size([ds_d1FX]))), Auto12(VV#1036, ds_d1FY, ds_d1FX));((size([VV#1036]) = (size([lq_anf__d1Hd]) + size([ds_d1FY]))), Auto12(VV#1036, lq_anf__d1Hd, ds_d1FY));((size([VV#1036]) > 0), Auto(VV#1036))] 
+
+solution: k__1063 := [((VV#1062 = ds_d1G4), Cmp0(VV#1062, ds_d1G4));((VV#1062 = GHC.Prim.void##0l), Cmp0(VV#1062, GHC.Prim.void##0l))] 
+
+solution: k__1070 := [((size([VV#1069]) > 0), Auto(VV#1069));((size([VV#1069]) = (size([lq_anf__d1He]) + size([ds_d1FX]))), Auto12(VV#1069, lq_anf__d1He, ds_d1FX));((size([VV#1069]) = (size([lq_anf__d1He]) + size([lq_anf__d1Hd]))), Auto12(VV#1069, lq_anf__d1He, lq_anf__d1Hd));((size([VV#1069]) = (size([lq_anf__d1Hd]) + size([ds_d1FY]))), Auto12(VV#1069, lq_anf__d1Hd, ds_d1FY));((size([VV#1069]) = (size([lq_anf__d1Hd]) + size([lq_anf__d1He]))), Auto12(VV#1069, lq_anf__d1Hd, lq_anf__d1He));((size([VV#1069]) = (size([ds_d1FY]) + size([ds_d1FX]))), Auto12(VV#1069, ds_d1FY, ds_d1FX));((size([VV#1069]) = (size([ds_d1FY]) + size([lq_anf__d1Hd]))), Auto12(VV#1069, ds_d1FY, lq_anf__d1Hd));((size([VV#1069]) = (size([ds_d1FX]) + size([ds_d1FY]))), Auto12(VV#1069, ds_d1FX, ds_d1FY));((size([VV#1069]) = (size([ds_d1FX]) + size([lq_anf__d1He]))), Auto12(VV#1069, ds_d1FX, lq_anf__d1He));((VV#1069 != ds_d1FX), Cmp1(VV#1069, ds_d1FX));((VV#1069 != ds_d1FY), Cmp1(VV#1069, ds_d1FY));((VV#1069 != lq_anf__d1Hd), Cmp1(VV#1069, lq_anf__d1Hd));((VV#1069 != lq_anf__d1He), Cmp1(VV#1069, lq_anf__d1He));((VV#1069 != lq_anf__d1Hj), Cmp1(VV#1069, lq_anf__d1Hj));((VV#1069 != lq_anf__d1Ho), Cmp1(VV#1069, lq_anf__d1Ho))] 
+
+solution: k__1080 := [((VV#1079 = ds_d1G2), Cmp0(VV#1079, ds_d1G2));((VV#1079 = ds_d1G4), Cmp0(VV#1079, ds_d1G4));((VV#1079 > GHC.Prim.void##0l), Cmp2(VV#1079, GHC.Prim.void##0l));((VV#1079 > ds_d1G2), Cmp2(VV#1079, ds_d1G2));((VV#1079 > ds_d1G4), Cmp2(VV#1079, ds_d1G4));((VV#1079 < GHC.Prim.void##0l), Cmp4(VV#1079, GHC.Prim.void##0l));((VV#1079 < ds_d1G2), Cmp4(VV#1079, ds_d1G2));((VV#1079 < ds_d1G4), Cmp4(VV#1079, ds_d1G4));((VV#1079 = GHC.Prim.void##0l), Cmp0(VV#1079, GHC.Prim.void##0l))] 
+
+solution: k__1087 := [(false, BOT())] 
+
+solution: k__1098 := [(false, BOT())] 
+
+solution: k__1261 := [(false, BOT())] 
+
+solution: k__1311 := [(false, BOT())] 
+
+//QUALIFIERS 
+
+qualif Auto(v:FAppTy (List.List ) @(0)):(size([v]) > 0)
+
+qualif Auto0(v:int, fix##126#A0:FAppTy (List.List ) @(0)):(v = size([fix##126#A0]))
+
+qualif Auto1(v:FAppTy (List.List ) @(0), fix##126#A0:FAppTy (List.List ) (FAppTy (List.List ) @(0))):(size([v]) = allSize([fix##126#A0]))
+
+qualif Auto10(VV:FAppTy (List.List ) @(0)):(allSize([VV]) = 0)
+
+qualif Auto11(v:int):(v >= 0)
+
+qualif Auto12(v:FAppTy (List.List ) @(0), fix##126#A0:FAppTy (List.List ) @(0), fix##126#A1:FAppTy (List.List ) @(0)):(size([v]) = (size([fix##126#A0]) + size([fix##126#A1])))
+
+qualif Auto13(v:FAppTy (List.List ) @(0), fix##126#A0:int):(size([v]) = fix##126#A0)
+
+qualif Auto14(v:GHC.Types.Bool ):Prop(v)
+
+qualif Auto15(v:FAppTy (List.List ) int):(size([v]) = 3)
+
+qualif Auto16(v:FAppTy (List.List ) @(1), fix##126#A0:FAppTy (List.List ) @(0)):(size([v]) = size([fix##126#A0]))
+
+qualif Auto17(VV:FAppTy (List.List ) @(0), fix##126#A0:FAppTy (List.List ) @(0)):(size([VV]) = (1 + size([fix##126#A0])))
+
+qualif Auto2(v:FAppTy (List.List ) int):(size([v]) = 2)
+
+qualif Auto3(v:FAppTy (List.List ) int):(size([v]) = 1)
+
+qualif Auto4(v:FAppTy (List.List ) @(0)):(size([v]) = 1)
+
+qualif Auto5(v:FAppTy (List.List ) @(0), fix##126#A0:FAppTy (List.List ) @(0)):(size([v]) = (1 + size([fix##126#A0])))
+
+qualif Auto6(VV:FAppTy (List.List ) @(0)):(size([VV]) = 0)
+
+qualif Auto7(v:FAppTy (List.List ) @(0)):(size([v]) = 0)
+
+qualif Auto8(v:FAppTy (List.List ) int):(size([v]) = 0)
+
+qualif Auto9(VV:FAppTy (List.List ) @(0), fix##126#A0:@(0), fix##126#A1:FAppTy (List.List ) @(0)):(allSize([VV]) = (size([fix##126#A0]) + allSize([fix##126#A1])))
+
+qualif Bot(v:@(0)):(0 = 1)
+qualif Bot0(v:bool):(0 = 1)
+
+qualif Bot1(v:int):(0 = 1)
+
+qualif Cmp(v:@(0), fix##126#X:@(0)):(v >= fix##126#X)
+
+qualif Cmp0(v:@(0), fix##126#X:@(0)):(v = fix##126#X)
+
+qualif Cmp1(v:@(0), fix##126#X:@(0)):(v != fix##126#X)
+
+qualif Cmp2(v:@(0), fix##126#X:@(0)):(v > fix##126#X)
+
+qualif Cmp3(v:@(0), fix##126#X:@(0)):(v <= fix##126#X)
+
+qualif Cmp4(v:@(0), fix##126#X:@(0)):(v < fix##126#X)
+
+qualif CmpLen(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) >= len([fix##126#Xs]))
+
+qualif CmpLen0(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) <= len([fix##126#Xs]))
+
+qualif CmpLen1(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) > len([fix##126#Xs]))
+
+qualif CmpLen2(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) < len([fix##126#Xs]))
+
+qualif CmpLen3(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) = len([fix##126#Xs]))
+
+qualif CmpZ(v:@(0)):(v != 0)
+qualif CmpZ0(v:@(0)):(v >= 0)
+
+qualif CmpZ1(v:@(0)):(v > 0)
+qualif CmpZ2(v:@(0)):(v = 0)
+
+qualif CmpZ3(v:@(0)):(v < 0)
+qualif CmpZ4(v:@(0)):(v <= 0)
+
+qualif EqLen(v:int, fix##126#Xs:FAppTy (List ) @(0)):(v = len([fix##126#Xs]))
+
+qualif False(v:bool):(~ ((Bexp v)))
+
+qualif False1(v:GHC.Types.Bool ):(~ (Prop(v)))
+
+qualif Fst(v:@(1), fix##126#Y:@(0)):(v = fst([fix##126#Y]))
+
+qualif IsEmp(v:GHC.Types.Bool , fix##126#Xs:FAppTy (List ) @(0)):(Prop(v) <=> (len([fix##126#Xs]) = 0))
+
+qualif IsEmp0(v:GHC.Types.Bool , fix##126#Xs:FAppTy (List ) @(0)):(Prop(v) <=> (len([fix##126#Xs]) > 0))
+
+qualif LenAcc(v:int, fix##126#Xs:FAppTy (List ) @(0), fix##126#N:int):(v = (len([fix##126#Xs]) + fix##126#N))
+
+qualif LenDiff(v:FAppTy (List ) @(0), fix##126#X:int):(len([v]) = (fix##126#X + 1))
+
+qualif LenDiff0(v:FAppTy (List ) @(0), fix##126#X:int):(len([v]) = (fix##126#X - 1))
+
+qualif LenEq(v:FAppTy (List ) @(0), fix##126#X:int):(fix##126#X = len([v]))
+
+qualif ListZ(v:FAppTy (List ) @(0)):(len([v]) >= 0)
+
+qualif ListZ0(v:FAppTy (List ) @(0)):(len([v]) = 0)
+
+qualif ListZ1(v:FAppTy (List ) @(0)):(len([v]) > 0)
+
+qualif One(v:int):(v = 1)
+
+qualif Papp(v:@(0), fix##126#P:FAppTy (Pred ) @(0)):papp1(fix##126#P, v)
+
+qualif Papp2(v:@(1), fix##126#X:@(0), fix##126#P:FAppTy (FAppTy (Pred ) @(1)) @(0)):papp2(fix##126#P, v, fix##126#X)
+
+qualif Papp3(v:@(2), fix##126#X:@(0), fix##126#Y:@(1), fix##126#P:FAppTy (FAppTy (FAppTy (Pred ) @(2)) @(0)) @(1)):papp3(fix##126#P, v, fix##126#X, fix##126#Y)
+
+qualif Snd(v:@(1), fix##126#Y:@(0)):(v = snd([fix##126#Y]))
+
+qualif True(v:bool):(Bexp v) 
+

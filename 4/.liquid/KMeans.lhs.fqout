@@ -1,0 +1,328 @@
+SAT 
+ 
+ 
+ 
+solution: k__1007 := [] 
+
+solution: k__1024 := [] 
+
+solution: k__1031 := [] 
+
+solution: k__1041 := [] 
+
+solution: k__1058 := [((len([VV#1057]) >= 0), ListZ0(VV#1057))] 
+
+solution: k__1067 := [] 
+
+solution: k__1070 := [] 
+
+solution: k__1076 := [] 
+
+solution: k__1080 := [] 
+
+solution: k__1112 := [((len([VV#1111]) >= 0), ListZ0(VV#1111))] 
+
+solution: k__1117 := [] 
+
+solution: k__1404 := [((size([VV#1403]) = n#a2kI), Auto3(VV#1403, n#a2kI))] 
+
+solution: k__1413 := [((VV#1412 >= 0), Auto2(VV#1412));((VV#1412 >= 0), CmpZ3(VV#1412));((VV#1412 < k#a2kH), Auto1(VV#1412, k#a2kH));((VV#1412 < k#a2kH), Cmp2(VV#1412, k#a2kH))] 
+
+solution: k__1433 := [((0 <= VV#1432), Auto(VV#1432));((VV#1432 < k#a2kH), Auto1(VV#1432, k#a2kH));((VV#1432 < k#a2kH), Cmp2(VV#1432, k#a2kH));((VV#1432 >= 0), CmpZ3(VV#1432))] 
+
+solution: k__1447 := [((VV#1446 >= 0), Auto2(VV#1446));((VV#1446 >= 0), CmpZ3(VV#1446))] 
+
+solution: k__1658 := [((0 <= VV#1657), Auto(VV#1657));((VV#1657 < lq_anf__d2s8), Auto1(VV#1657, lq_anf__d2s8));((VV#1657 < lq_anf__d2s9), Auto1(VV#1657, lq_anf__d2s9));((VV#1657 < lq_anf__d2s8), Cmp2(VV#1657, lq_anf__d2s8));((VV#1657 < lq_anf__d2s9), Cmp2(VV#1657, lq_anf__d2s9));((VV#1657 = 0), CmpZ(VV#1657));((VV#1657 = lq_anf__d2sa), Cmp4(VV#1657, lq_anf__d2sa))] 
+
+solution: k__1665 := [((size([VV#1664]) = lq_anf__d2s9), Auto3(VV#1664, lq_anf__d2s9));((VV#1664 != lq_anf__d2rU), Cmp(VV#1664, lq_anf__d2rU));((VV#1664 != lq_anf__d2rV), Cmp(VV#1664, lq_anf__d2rV));((VV#1664 != lq_anf__d2rY), Cmp(VV#1664, lq_anf__d2rY));((VV#1664 != lq_anf__d2rZ), Cmp(VV#1664, lq_anf__d2rZ));((VV#1664 != lq_anf__d2s2), Cmp(VV#1664, lq_anf__d2s2));((VV#1664 != lq_anf__d2s3), Cmp(VV#1664, lq_anf__d2s3));((VV#1664 != lq_anf__d2s6), Cmp(VV#1664, lq_anf__d2s6));((VV#1664 != lq_anf__d2s7), Cmp(VV#1664, lq_anf__d2s7));((VV#1664 = p0#a2kO), Cmp4(VV#1664, p0#a2kO))] 
+
+solution: k__1694 := [((VV#1693 < lq_anf__d2s8), Auto1(VV#1693, lq_anf__d2s8));((VV#1693 < lq_anf__d2s9), Auto1(VV#1693, lq_anf__d2s9));((VV#1693 > lq_anf__d2sa), Cmp1(VV#1693, lq_anf__d2sa));((VV#1693 < lq_anf__d2s8), Cmp2(VV#1693, lq_anf__d2s8));((VV#1693 < lq_anf__d2s9), Cmp2(VV#1693, lq_anf__d2s9));((VV#1693 > 0), CmpZ0(VV#1693));((VV#1693 = 1), One(VV#1693));((VV#1693 = lq_anf__d2sc), Cmp4(VV#1693, lq_anf__d2sc))] 
+
+solution: k__1701 := [((size([VV#1700]) = lq_anf__d2s9), Auto3(VV#1700, lq_anf__d2s9));((VV#1700 != lq_anf__d2rU), Cmp(VV#1700, lq_anf__d2rU));((VV#1700 != lq_anf__d2rV), Cmp(VV#1700, lq_anf__d2rV));((VV#1700 != lq_anf__d2rY), Cmp(VV#1700, lq_anf__d2rY));((VV#1700 != lq_anf__d2rZ), Cmp(VV#1700, lq_anf__d2rZ));((VV#1700 != lq_anf__d2s2), Cmp(VV#1700, lq_anf__d2s2));((VV#1700 != lq_anf__d2s3), Cmp(VV#1700, lq_anf__d2s3));((VV#1700 != lq_anf__d2s6), Cmp(VV#1700, lq_anf__d2s6));((VV#1700 != lq_anf__d2s7), Cmp(VV#1700, lq_anf__d2s7));((VV#1700 = p1#a2kP), Cmp4(VV#1700, p1#a2kP))] 
+
+solution: k__1730 := [((VV#1729 > 0), Auto0(VV#1729));((VV#1729 < lq_anf__d2s8), Auto1(VV#1729, lq_anf__d2s8));((VV#1729 > lq_anf__d2sa), Cmp1(VV#1729, lq_anf__d2sa));((VV#1729 > lq_anf__d2sc), Cmp1(VV#1729, lq_anf__d2sc));((VV#1729 < lq_anf__d2s8), Cmp2(VV#1729, lq_anf__d2s8));((VV#1729 = lq_anf__d2s9), Cmp4(VV#1729, lq_anf__d2s9));((VV#1729 > 0), CmpZ0(VV#1729));((VV#1729 = lq_anf__d2se), Cmp4(VV#1729, lq_anf__d2se))] 
+
+solution: k__1737 := [((size([VV#1736]) = lq_anf__d2s9), Auto3(VV#1736, lq_anf__d2s9));((size([VV#1736]) = lq_anf__d2se), Auto3(VV#1736, lq_anf__d2se));((VV#1736 != lq_anf__d2rU), Cmp(VV#1736, lq_anf__d2rU));((VV#1736 != lq_anf__d2rV), Cmp(VV#1736, lq_anf__d2rV));((VV#1736 != lq_anf__d2rY), Cmp(VV#1736, lq_anf__d2rY));((VV#1736 != lq_anf__d2rZ), Cmp(VV#1736, lq_anf__d2rZ));((VV#1736 != lq_anf__d2s2), Cmp(VV#1736, lq_anf__d2s2));((VV#1736 != lq_anf__d2s3), Cmp(VV#1736, lq_anf__d2s3));((VV#1736 != lq_anf__d2s6), Cmp(VV#1736, lq_anf__d2s6));((VV#1736 != lq_anf__d2s7), Cmp(VV#1736, lq_anf__d2s7));((VV#1736 = p2#a2kQ), Cmp4(VV#1736, p2#a2kQ))] 
+
+solution: k__1756 := [(false, BOT())] 
+
+solution: k__1762 := [(false, BOT())] 
+
+solution: k__1772 := [(false, BOT())] 
+
+solution: k__1812 := [((VV#1811 = fst([VV#1827])), Fst(VV#1811, VV#1827));((VV#1811 = fst([lq_anf__d2sf])), Fst(VV#1811, lq_anf__d2sf));((VV#1811 = (len([lq_anf__d2sg]) + lq_anf__d2s9)), LenAcc(VV#1811, lq_anf__d2sg, lq_anf__d2s9));((VV#1811 = (len([lq_anf__d2sg]) + lq_anf__d2se)), LenAcc(VV#1811, lq_anf__d2sg, lq_anf__d2se));((VV#1811 > 0), Auto0(VV#1811));((VV#1811 < lq_anf__d2s8), Auto1(VV#1811, lq_anf__d2s8));((VV#1811 > lq_anf__d2sa), Cmp1(VV#1811, lq_anf__d2sa));((VV#1811 > lq_anf__d2sc), Cmp1(VV#1811, lq_anf__d2sc));((VV#1811 < lq_anf__d2s8), Cmp2(VV#1811, lq_anf__d2s8));((VV#1811 = lq_anf__d2s9), Cmp4(VV#1811, lq_anf__d2s9));((VV#1811 = lq_anf__d2se), Cmp4(VV#1811, lq_anf__d2se));((VV#1811 > 0), CmpZ0(VV#1811))] 
+
+solution: k__1818 := [((VV#1817 = snd([VV#1827])), Snd(VV#1817, VV#1827));((VV#1817 = snd([lq_anf__d2sf])), Snd(VV#1817, lq_anf__d2sf));((size([VV#1817]) = lq_anf__d2s9), Auto3(VV#1817, lq_anf__d2s9));((size([VV#1817]) = lq_anf__d2se), Auto3(VV#1817, lq_anf__d2se));((VV#1817 != lq_anf__d2rU), Cmp(VV#1817, lq_anf__d2rU));((VV#1817 != lq_anf__d2rV), Cmp(VV#1817, lq_anf__d2rV));((VV#1817 != lq_anf__d2rY), Cmp(VV#1817, lq_anf__d2rY));((VV#1817 != lq_anf__d2rZ), Cmp(VV#1817, lq_anf__d2rZ));((VV#1817 != lq_anf__d2s2), Cmp(VV#1817, lq_anf__d2s2));((VV#1817 != lq_anf__d2s3), Cmp(VV#1817, lq_anf__d2s3));((VV#1817 != lq_anf__d2s6), Cmp(VV#1817, lq_anf__d2s6));((VV#1817 != lq_anf__d2s7), Cmp(VV#1817, lq_anf__d2s7));((VV#1817 = p2#a2kQ), Cmp4(VV#1817, p2#a2kQ))] 
+
+solution: k__1828 := [((VV#1827 != lq_anf__d2sb), Cmp(VV#1827, lq_anf__d2sb));((VV#1827 != lq_anf__d2sd), Cmp(VV#1827, lq_anf__d2sd));((VV#1827 = lq_anf__d2sf), Cmp4(VV#1827, lq_anf__d2sf))] 
+
+solution: k__1891 := [((VV#1890 > 0), CmpZ0(VV#1890));((VV#1890 >= lq_anf__d2sc), Cmp3(VV#1890, lq_anf__d2sc));((VV#1890 < lq_anf__d2s8), Cmp2(VV#1890, lq_anf__d2s8));((VV#1890 > lq_anf__d2sa), Cmp1(VV#1890, lq_anf__d2sa));((VV#1890 <= lq_anf__d2s9), Cmp0(VV#1890, lq_anf__d2s9));((VV#1890 < lq_anf__d2s8), Auto1(VV#1890, lq_anf__d2s8));((VV#1890 > 0), Auto0(VV#1890));((VV#1890 = fst([VV#1906])), Fst(VV#1890, VV#1906));((VV#1890 <= lq_anf__d2se), Cmp0(VV#1890, lq_anf__d2se))] 
+
+solution: k__1897 := [((VV#1896 != lq_anf__d2s7), Cmp(VV#1896, lq_anf__d2s7));((VV#1896 != lq_anf__d2s6), Cmp(VV#1896, lq_anf__d2s6));((VV#1896 != lq_anf__d2s3), Cmp(VV#1896, lq_anf__d2s3));((VV#1896 != lq_anf__d2s2), Cmp(VV#1896, lq_anf__d2s2));((VV#1896 != lq_anf__d2rZ), Cmp(VV#1896, lq_anf__d2rZ));((VV#1896 != lq_anf__d2rY), Cmp(VV#1896, lq_anf__d2rY));((VV#1896 != lq_anf__d2rV), Cmp(VV#1896, lq_anf__d2rV));((VV#1896 != lq_anf__d2rU), Cmp(VV#1896, lq_anf__d2rU));((size([VV#1896]) = lq_anf__d2s9), Auto3(VV#1896, lq_anf__d2s9));((VV#1896 = snd([VV#1906])), Snd(VV#1896, VV#1906));((size([VV#1896]) = lq_anf__d2se), Auto3(VV#1896, lq_anf__d2se))] 
+
+solution: k__1907 := [((VV#1906 != lq_anf__d2sb), Cmp(VV#1906, lq_anf__d2sb))] 
+
+solution: k__1970 := [((VV#1969 >= 0), CmpZ3(VV#1969));((VV#1969 >= lq_anf__d2sa), Cmp3(VV#1969, lq_anf__d2sa));((VV#1969 < lq_anf__d2s8), Cmp2(VV#1969, lq_anf__d2s8));((VV#1969 <= lq_anf__d2s9), Cmp0(VV#1969, lq_anf__d2s9));((VV#1969 >= 0), Auto2(VV#1969));((VV#1969 < lq_anf__d2s8), Auto1(VV#1969, lq_anf__d2s8));((VV#1969 = fst([VV#1985])), Fst(VV#1969, VV#1985));((VV#1969 <= lq_anf__d2se), Cmp0(VV#1969, lq_anf__d2se))] 
+
+solution: k__1976 := [((VV#1975 != lq_anf__d2s7), Cmp(VV#1975, lq_anf__d2s7));((VV#1975 != lq_anf__d2s6), Cmp(VV#1975, lq_anf__d2s6));((VV#1975 != lq_anf__d2s3), Cmp(VV#1975, lq_anf__d2s3));((VV#1975 != lq_anf__d2s2), Cmp(VV#1975, lq_anf__d2s2));((VV#1975 != lq_anf__d2rZ), Cmp(VV#1975, lq_anf__d2rZ));((VV#1975 != lq_anf__d2rY), Cmp(VV#1975, lq_anf__d2rY));((VV#1975 != lq_anf__d2rV), Cmp(VV#1975, lq_anf__d2rV));((VV#1975 != lq_anf__d2rU), Cmp(VV#1975, lq_anf__d2rU));((size([VV#1975]) = lq_anf__d2s9), Auto3(VV#1975, lq_anf__d2s9));((VV#1975 = snd([VV#1985])), Snd(VV#1975, VV#1985));((size([VV#1975]) = lq_anf__d2se), Auto3(VV#1975, lq_anf__d2se))] 
+
+solution: k__1986 := [] 
+
+solution: k__2053 := [((0 <= VV#2052), Auto(VV#2052));((VV#2052 < lq_anf__d2s8), Auto1(VV#2052, lq_anf__d2s8));((VV#2052 <= lq_anf__d2s9), Cmp0(VV#2052, lq_anf__d2s9));((VV#2052 <= lq_anf__d2se), Cmp0(VV#2052, lq_anf__d2se));((VV#2052 < lq_anf__d2s8), Cmp2(VV#2052, lq_anf__d2s8));((VV#2052 >= lq_anf__d2sa), Cmp3(VV#2052, lq_anf__d2sa));((VV#2052 >= 0), CmpZ3(VV#2052))] 
+
+solution: k__2060 := [((size([VV#2059]) = lq_anf__d2s9), Auto3(VV#2059, lq_anf__d2s9));((size([VV#2059]) = lq_anf__d2se), Auto3(VV#2059, lq_anf__d2se));((VV#2059 != lq_anf__d2rU), Cmp(VV#2059, lq_anf__d2rU));((VV#2059 != lq_anf__d2rV), Cmp(VV#2059, lq_anf__d2rV));((VV#2059 != lq_anf__d2rY), Cmp(VV#2059, lq_anf__d2rY));((VV#2059 != lq_anf__d2rZ), Cmp(VV#2059, lq_anf__d2rZ));((VV#2059 != lq_anf__d2s2), Cmp(VV#2059, lq_anf__d2s2));((VV#2059 != lq_anf__d2s3), Cmp(VV#2059, lq_anf__d2s3));((VV#2059 != lq_anf__d2s6), Cmp(VV#2059, lq_anf__d2s6));((VV#2059 != lq_anf__d2s7), Cmp(VV#2059, lq_anf__d2s7))] 
+
+solution: k__2243 := [((VV#2242 > 0), Auto0(VV#2242));((VV#2242 > n1#a2kT), Cmp1(VV#2242, n1#a2kT));((VV#2242 > n2#a2kV), Cmp1(VV#2242, n2#a2kV));((VV#2242 > 0), CmpZ0(VV#2242));((VV#2242 = lq_anf__d2sn), Cmp4(VV#2242, lq_anf__d2sn))] 
+
+solution: k__2250 := [((size([VV#2249]) = n#a2kS), Auto3(VV#2249, n#a2kS));((VV#2249 = lq_anf__d2sp), Cmp4(VV#2249, lq_anf__d2sp))] 
+
+solution: k__2275 := [((VV#2274 > 0), Auto0(VV#2274));((VV#2274 > 0), CmpZ0(VV#2274))] 
+
+solution: k__2281 := [((size([VV#2280]) = n#a2lb), Auto3(VV#2280, n#a2lb))] 
+
+solution: k__2291 := [] 
+
+solution: k__2295 := [((VV#2294 > 0), Auto0(VV#2294));((VV#2294 > 0), CmpZ0(VV#2294))] 
+
+solution: k__2301 := [((size([VV#2300]) = n#a2lb), Auto3(VV#2300, n#a2lb))] 
+
+solution: k__2311 := [] 
+
+solution: k__2362 := [((size([VV#2361]) = n#a2lb), Auto3(VV#2361, n#a2lb))] 
+
+solution: k__2366 := [((0 <= VV#2365), Auto(VV#2365));((VV#2365 < k#a2la), Auto1(VV#2365, k#a2la));((VV#2365 < k#a2la), Cmp2(VV#2365, k#a2la));((VV#2365 >= 0), CmpZ3(VV#2365));((VV#2365 = fst([VV#2407])), Fst(VV#2365, VV#2407))] 
+
+solution: k__2369 := [((VV#2368 <= k#a2la), Cmp0(VV#2368, k#a2la));((VV#2368 <= n#a2lb), Cmp0(VV#2368, n#a2lb));((VV#2368 > 0), CmpZ0(VV#2368));((VV#2368 = fst([VV#2384])), Fst(VV#2368, VV#2384));((VV#2368 = 1), One(VV#2368))] 
+
+solution: k__2375 := [((size([VV#2374]) = n#a2lb), Auto3(VV#2374, n#a2lb));((VV#2374 = p#a2ll), Cmp4(VV#2374, p#a2ll));((VV#2374 = snd([VV#2384])), Snd(VV#2374, VV#2384))] 
+
+solution: k__2382 := [((size([VV#2381]) = n#a2lb), Auto3(VV#2381, n#a2lb));((VV#2381 = p#a2ll), Cmp4(VV#2381, p#a2ll))] 
+
+solution: k__2385 := [((VV#2384 = snd([VV#2407])), Snd(VV#2384, VV#2407))] 
+
+solution: k__2408 := [] 
+
+solution: k__2411 := [] 
+
+solution: k__2452 := [((VV#2451 <= k#a2la), Cmp0(VV#2451, k#a2la));((VV#2451 <= n#a2lb), Cmp0(VV#2451, n#a2lb));((VV#2451 > 0), CmpZ0(VV#2451));((VV#2451 = 1), One(VV#2451));((VV#2451 = lq_anf__d2sr), Cmp4(VV#2451, lq_anf__d2sr))] 
+
+solution: k__2459 := [((size([VV#2458]) = n#a2lb), Auto3(VV#2458, n#a2lb));((VV#2458 = p#a2ll), Cmp4(VV#2458, p#a2ll))] 
+
+solution: k__2467 := [((size([VV#2466]) = n#a2lb), Auto3(VV#2466, n#a2lb));((VV#2466 = p#a2ll), Cmp4(VV#2466, p#a2ll))] 
+
+solution: k__2482 := [((0 <= VV#2481), Auto(VV#2481));((VV#2481 < k#a2la), Auto1(VV#2481, k#a2la));((VV#2481 < k#a2la), Cmp2(VV#2481, k#a2la));((VV#2481 >= 0), CmpZ3(VV#2481));((VV#2481 = lq_anf__d2sq), Cmp4(VV#2481, lq_anf__d2sq))] 
+
+solution: k__2486 := [((VV#2485 = fst([VV#2501])), Fst(VV#2485, VV#2501));((VV#2485 = fst([lq_anf__d2ss])), Fst(VV#2485, lq_anf__d2ss));((VV#2485 <= k#a2la), Cmp0(VV#2485, k#a2la));((VV#2485 <= n#a2lb), Cmp0(VV#2485, n#a2lb));((VV#2485 = lq_anf__d2sr), Cmp4(VV#2485, lq_anf__d2sr));((VV#2485 > 0), CmpZ0(VV#2485));((VV#2485 = 1), One(VV#2485))] 
+
+solution: k__2492 := [((VV#2491 = snd([VV#2501])), Snd(VV#2491, VV#2501));((VV#2491 = snd([lq_anf__d2ss])), Snd(VV#2491, lq_anf__d2ss));((size([VV#2491]) = n#a2lb), Auto3(VV#2491, n#a2lb));((VV#2491 = p#a2ll), Cmp4(VV#2491, p#a2ll))] 
+
+solution: k__2499 := [((VV#2498 = snd([lq_anf__d2ss])), Snd(VV#2498, lq_anf__d2ss));((size([VV#2498]) = n#a2lb), Auto3(VV#2498, n#a2lb));((VV#2498 = p#a2ll), Cmp4(VV#2498, p#a2ll))] 
+
+solution: k__2502 := [((VV#2501 = lq_anf__d2ss), Cmp4(VV#2501, lq_anf__d2ss))] 
+
+solution: k__2545 := [((VV#2544 = fst([VV#2586])), Fst(VV#2544, VV#2586));((VV#2544 = fst([lq_anf__d2st])), Fst(VV#2544, lq_anf__d2st));((0 <= VV#2544), Auto(VV#2544));((VV#2544 < k#a2la), Auto1(VV#2544, k#a2la));((VV#2544 < k#a2la), Cmp2(VV#2544, k#a2la));((VV#2544 = lq_anf__d2sq), Cmp4(VV#2544, lq_anf__d2sq));((VV#2544 >= 0), CmpZ3(VV#2544))] 
+
+solution: k__2548 := [((VV#2547 <= k#a2la), Cmp0(VV#2547, k#a2la));((VV#2547 <= n#a2lb), Cmp0(VV#2547, n#a2lb));((VV#2547 = lq_anf__d2sr), Cmp4(VV#2547, lq_anf__d2sr));((VV#2547 > 0), CmpZ0(VV#2547));((VV#2547 = fst([VV#2563])), Fst(VV#2547, VV#2563));((VV#2547 = fst([lq_anf__d2ss])), Fst(VV#2547, lq_anf__d2ss));((VV#2547 = 1), One(VV#2547))] 
+
+solution: k__2554 := [((size([VV#2553]) = n#a2lb), Auto3(VV#2553, n#a2lb));((VV#2553 = p#a2ll), Cmp4(VV#2553, p#a2ll));((VV#2553 = snd([VV#2563])), Snd(VV#2553, VV#2563));((VV#2553 = snd([lq_anf__d2ss])), Snd(VV#2553, lq_anf__d2ss))] 
+
+solution: k__2561 := [((size([VV#2560]) = n#a2lb), Auto3(VV#2560, n#a2lb));((VV#2560 = p#a2ll), Cmp4(VV#2560, p#a2ll));((VV#2560 = snd([lq_anf__d2ss])), Snd(VV#2560, lq_anf__d2ss))] 
+
+solution: k__2564 := [((VV#2563 = snd([VV#2586])), Snd(VV#2563, VV#2586));((VV#2563 = snd([lq_anf__d2st])), Snd(VV#2563, lq_anf__d2st));((VV#2563 = lq_anf__d2ss), Cmp4(VV#2563, lq_anf__d2ss))] 
+
+solution: k__2587 := [((VV#2586 = lq_anf__d2st), Cmp4(VV#2586, lq_anf__d2st))] 
+
+solution: k__2648 := [((size([VV#2647]) = n#a2lb), Auto3(VV#2647, n#a2lb))] 
+
+solution: k__2653 := [((0 <= VV#2652), Auto(VV#2652));((VV#2652 < k#a2la), Auto1(VV#2652, k#a2la));((VV#2652 < k#a2la), Cmp2(VV#2652, k#a2la));((VV#2652 >= 0), CmpZ3(VV#2652))] 
+
+solution: k__2657 := [((VV#2656 > 0), CmpZ0(VV#2656));((VV#2656 > 0), Auto0(VV#2656))] 
+
+solution: k__2663 := [((size([VV#2662]) = n#a2lb), Auto3(VV#2662, n#a2lb))] 
+
+solution: k__2670 := [] 
+
+solution: k__2673 := [] 
+
+solution: k__2737 := [] 
+
+solution: k__2740 := [((VV#2739 > 0), Auto0(VV#2739));((VV#2739 > 0), CmpZ0(VV#2739))] 
+
+solution: k__2746 := [((size([VV#2745]) = n#a2lb), Auto3(VV#2745, n#a2lb))] 
+
+solution: k__2753 := [] 
+
+solution: k__2756 := [] 
+
+solution: k__2759 := [] 
+
+solution: k__2762 := [] 
+
+solution: k__2768 := [((size([VV#2767]) = n#a2lb), Auto3(VV#2767, n#a2lb))] 
+
+solution: k__2771 := [] 
+
+solution: k__2774 := [((VV#2773 > 0), Auto0(VV#2773));((VV#2773 > 0), CmpZ0(VV#2773))] 
+
+solution: k__2780 := [((size([VV#2779]) = n#a2lb), Auto3(VV#2779, n#a2lb))] 
+
+solution: k__2787 := [] 
+
+solution: k__2790 := [] 
+
+solution: k__2797 := [((size([VV#2796]) = n#a2lb), Auto3(VV#2796, n#a2lb))] 
+
+solution: k__2854 := [((VV#2853 > 0), Auto0(VV#2853));((VV#2853 > 0), CmpZ0(VV#2853))] 
+
+solution: k__2860 := [((size([VV#2859]) = n#a2lb), Auto3(VV#2859, n#a2lb))] 
+
+solution: k__2867 := [] 
+
+solution: k__2870 := [] 
+
+solution: k__2883 := [((size([VV#2882]) = n#a2lb), Auto3(VV#2882, n#a2lb))] 
+
+solution: k__2888 := [] 
+
+solution: k__2916 := [((0 <= VV#2915), Auto(VV#2915));((VV#2915 < k#a2la), Auto1(VV#2915, k#a2la));((VV#2915 < k#a2la), Cmp2(VV#2915, k#a2la));((VV#2915 >= 0), CmpZ3(VV#2915))] 
+
+solution: k__2930 := [((0 <= VV#2929), Auto(VV#2929));((VV#2929 >= 0), CmpZ3(VV#2929))] 
+
+solution: k__2934 := [] 
+
+solution: k__2937 := [] 
+
+solution: k__2940 := [] 
+
+solution: k__2943 := [] 
+
+solution: k__2971 := [((VV#2970 = GHC.Prim.void##0l), Cmp4(VV#2970, GHC.Prim.void##0l))] 
+
+solution: k__2975 := [] 
+
+solution: k__3010 := [] 
+
+solution: k__3064 := [((VV#3063 >= 0), CmpZ3(VV#3063));((VV#3063 >= 0), Auto2(VV#3063));((VV#3063 < k#a2l2), Cmp2(VV#3063, k#a2l2));((VV#3063 < k#a2l2), Auto1(VV#3063, k#a2l2))] 
+
+solution: k__3070 := [((size([VV#3069]) = n#a2l3), Auto3(VV#3069, n#a2l3))] 
+
+solution: k__3073 := [] 
+
+solution: k__747 := [] 
+
+solution: k__769 := [] 
+
+solution: k__785 := [] 
+
+solution: k__795 := [] 
+
+solution: k__812 := [((len([VV#811]) >= 0), ListZ0(VV#811))] 
+
+solution: k__816 := [] 
+
+solution: k__823 := [] 
+
+solution: k__913 := [] 
+
+solution: k__923 := [] 
+
+solution: k__957 := [] 
+
+solution: k__967 := [((VV#966 = lq_anf__d2rB), Cmp4(VV#966, lq_anf__d2rB))] 
+
+solution: k__972 := [] 
+
+solution: k__984 := [] 
+
+solution: k__990 := [] 
+
+solution: k__993 := [] 
+
+//QUALIFIERS 
+
+qualif Auto(v:int):(0 <= v)
+
+qualif Auto0(v:int):(v > 0)
+
+qualif Auto1(v:int, fix##126#A0:int):(v < fix##126#A0)
+
+qualif Auto2(v:int):(v >= 0)
+
+qualif Auto3(v:FAppTy (List.List ) real, fix##126#A0:int):(size([v]) = fix##126#A0)
+
+qualif Bot(v:@(0)):(0 = 1)
+qualif Bot0(v:bool):(0 = 1)
+
+qualif Bot1(v:int):(0 = 1)
+
+qualif Cmp(v:@(0), fix##126#X:@(0)):(v != fix##126#X)
+
+qualif Cmp0(v:@(0), fix##126#X:@(0)):(v <= fix##126#X)
+
+qualif Cmp1(v:@(0), fix##126#X:@(0)):(v > fix##126#X)
+
+qualif Cmp2(v:@(0), fix##126#X:@(0)):(v < fix##126#X)
+
+qualif Cmp3(v:@(0), fix##126#X:@(0)):(v >= fix##126#X)
+
+qualif Cmp4(v:@(0), fix##126#X:@(0)):(v = fix##126#X)
+
+qualif CmpLen(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) <= len([fix##126#Xs]))
+
+qualif CmpLen0(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) < len([fix##126#Xs]))
+
+qualif CmpLen1(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) > len([fix##126#Xs]))
+
+qualif CmpLen2(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) >= len([fix##126#Xs]))
+
+qualif CmpLen3(v:FAppTy (List ) @(1), fix##126#Xs:FAppTy (List ) @(0)):(len([v]) = len([fix##126#Xs]))
+
+qualif CmpZ(v:@(0)):(v = 0)
+qualif CmpZ0(v:@(0)):(v > 0)
+
+qualif CmpZ1(v:@(0)):(v < 0)
+qualif CmpZ2(v:@(0)):(v <= 0)
+
+qualif CmpZ3(v:@(0)):(v >= 0)
+qualif CmpZ4(v:@(0)):(v != 0)
+
+qualif EqLen(v:int, fix##126#Xs:FAppTy (List ) @(0)):(v = len([fix##126#Xs]))
+
+qualif False(v:bool):(~ ((Bexp v)))
+
+qualif False1(v:GHC.Types.Bool ):(~ (Prop(v)))
+
+qualif Fst(v:@(1), fix##126#Y:@(0)):(v = fst([fix##126#Y]))
+
+qualif IsEmp(v:GHC.Types.Bool , fix##126#Xs:FAppTy (List ) @(0)):(Prop(v) <=> (len([fix##126#Xs]) > 0))
+
+qualif IsEmp0(v:GHC.Types.Bool , fix##126#Xs:FAppTy (List ) @(0)):(Prop(v) <=> (len([fix##126#Xs]) = 0))
+
+qualif LenAcc(v:int, fix##126#Xs:FAppTy (List ) @(0), fix##126#N:int):(v = (len([fix##126#Xs]) + fix##126#N))
+
+qualif LenDiff(v:FAppTy (List ) @(0), fix##126#X:int):(len([v]) = (fix##126#X + 1))
+
+qualif LenDiff0(v:FAppTy (List ) @(0), fix##126#X:int):(len([v]) = (fix##126#X - 1))
+
+qualif LenEq(v:FAppTy (List ) @(0), fix##126#X:int):(fix##126#X = len([v]))
+
+qualif ListZ(v:FAppTy (List ) @(0)):(len([v]) > 0)
+
+qualif ListZ0(v:FAppTy (List ) @(0)):(len([v]) >= 0)
+
+qualif ListZ1(v:FAppTy (List ) @(0)):(len([v]) = 0)
+
+qualif One(v:int):(v = 1)
+
+qualif Papp(v:@(0), fix##126#P:FAppTy (Pred ) @(0)):papp1(fix##126#P, v)
+
+qualif Papp2(v:@(1), fix##126#X:@(0), fix##126#P:FAppTy (FAppTy (Pred ) @(1)) @(0)):papp2(fix##126#P, v, fix##126#X)
+
+qualif Papp3(v:@(2), fix##126#X:@(0), fix##126#Y:@(1), fix##126#P:FAppTy (FAppTy (FAppTy (Pred ) @(2)) @(0)) @(1)):papp3(fix##126#P, v, fix##126#X, fix##126#Y)
+
+qualif Snd(v:@(1), fix##126#Y:@(0)):(v = snd([fix##126#Y]))
+
+qualif True(v:bool):(Bexp v)
+
+qualif True1(v:GHC.Types.Bool ):Prop(v) 
+
