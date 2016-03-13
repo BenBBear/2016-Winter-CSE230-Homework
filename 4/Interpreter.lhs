@@ -3,9 +3,10 @@ Part 3: An Interpreter for WHILE
 
 \begin{code}
 {-@ LIQUID "--no-termination" @-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Interpreter (interpret) where
-
+import Control.Monad.State
 import           Prelude hiding (lookup)
 import qualified Data.Set as S
 
@@ -142,34 +143,43 @@ and add suitable refinement type specifications, such that you can prove
 that the following `interpret` function is safe:
 
 \begin{code}
+
+
+
 interpret :: Statement -> Maybe Store
 interpret s 
   | isSafe s  = Just (evalS [] s)  -- `s` does not use any vars before definition 
   | otherwise = Nothing            -- `s` may use some var before definition
 
+
+initial:: State (S.Set Variable) (S.Set Variable)
+initial = return S.empty
 {-@ inline isSafe @-}
 isSafe :: Statement -> Bool
-isSafe s = True -- TODO: replace with correct implementation 
+isSafe s = (S.size a) == 0  where (a, _) = runState (readS s) S.empty
 \end{code}
-
-To implement `isSafe` you probably need to write a function that computes the
-`Set` of variables that are ``read-before-definition" in a `Statement` (and
-`Expression`):
 
 \begin{code}
 {-@ measure readS @-}
-readS :: Statement -> S.Set Variable
-readS (Assign x e)     = S.empty    -- TODO: replace with proper definition 
-readS (IfZ e s1 s2)    = S.empty    -- TODO: replace with proper definition
-readS (WhileZ e s)     = S.empty    -- TODO: replace with proper definition
-readS (Sequence s1 s2) = S.empty    -- TODO: replace with proper definition
-readS Skip             = S.empty    -- TODO: replace with proper definition
+-- one is all variable defined, one is variable that is not define
+readS :: Statement -> (State (S.Set Variable) (S.Set Variable))
+readS (Assign x e)  = do
+                         st <- get
+                         us <- readE e 
+                         put (S.insert x st)                          
+                         return us
+                          
+                               
+-- readS (IfZ e s1 s2)    = (readE e)  `S.union` (readS s1)  `S.union` (readS s2)
+-- readS (WhileZ e s)     = (readE e)  `S.union` (readS s)
+-- readS (Sequence s1 s2) = (readS s1)  `S.union` (readS s2)
+-- readS Skip             = S.empty   
 
 {-@ measure readE @-}
-readE :: Expression -> S.Set Variable   
-readE (Var x)          = S.empty    -- TODO: replace with proper definition
-readE (Val v)          = S.empty    -- TODO: replace with proper definition
-readE (Op o e1 e2)     = S.empty    -- TODO: replace with proper definition
+readE :: Expression -> (State (S.Set Variable) (S.Set Variable))
+readE (Var x)          = return S.empty    -- TODO: replace with proper definition
+-- readE (Val v)          = S.empty    -- TODO: replace with proper definition
+-- readE (Op o e1 e2)     = S.empty    -- TODO: replace with proper definition
 \end{code}
 
 

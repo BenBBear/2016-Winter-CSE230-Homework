@@ -14,7 +14,7 @@ Library
                 , mtl
                 , stm
                 , pretty
-                , QuickCheck == 2.7
+                , QuickCheck
 
   Exposed-Modules: Hw4
 
