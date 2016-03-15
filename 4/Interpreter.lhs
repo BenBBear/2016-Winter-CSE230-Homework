@@ -168,18 +168,43 @@ readS (Assign x e)  = do
                          us <- readE e 
                          put (S.insert x st)                          
                          return us
-                          
-                               
--- readS (IfZ e s1 s2)    = (readE e)  `S.union` (readS s1)  `S.union` (readS s2)
--- readS (WhileZ e s)     = (readE e)  `S.union` (readS s)
--- readS (Sequence s1 s2) = (readS s1)  `S.union` (readS s2)
--- readS Skip             = S.empty   
+                                                         
+readS (IfZ e s1 s2)    = do
+                           sue <- readE e
+                           sus1 <- readS s1
+                           sus2 <- readS s2
+                           return $ sue `S.union` sus1 `S.union` sus2
+  
+
+readS (WhileZ e s)     = do
+                           sue <- readE e
+                           sus <- readS s
+                           return $ sue `S.union` sus
+ 
+readS (Sequence s1 s2) = do
+                           sus1 <- readS s1
+                           sus2 <- readS s2
+                           return $ sus1 `S.union` sus2
+                           
+readS Skip             = return S.empty   
 
 {-@ measure readE @-}
 readE :: Expression -> (State (S.Set Variable) (S.Set Variable))
-readE (Var x)          = return S.empty    -- TODO: replace with proper definition
--- readE (Val v)          = S.empty    -- TODO: replace with proper definition
--- readE (Op o e1 e2)     = S.empty    -- TODO: replace with proper definition
+readE (Var x)          = do
+                           st <- get
+                           if (S.member x st)
+                             then
+                               return S.empty
+                             else
+                               return (S.insert x S.empty)
+
+                               
+readE (Val v)          = return S.empty
+
+readE (Op o e1 e2)     = do
+                           sue1 <- readE e1
+                           sue2 <- readE e2
+                           return $ sue1 `S.union` sue2                           
 \end{code}
 
 
