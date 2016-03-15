@@ -1,0 +1,21 @@
+ERROR: 
+ Interpreter.lhs:199:13: Error: Cannot promote Haskell function readE to logic
+     Cannot transform to Logic:	\ (st :: Data.Set.Base.Set Interpreter.Variable) ->
+  case Data.Set.Base.member x st of lq_anf__d2kx {
+    GHC.Types.False ->
+      let {
+        lq_anf__d2ky :: Data.Set.Base.Set Interpreter.Variable
+        [LclId, Str=DmdType]
+        lq_anf__d2ky = Data.Set.Base.empty } in
+      let {
+        lq_anf__d2kz :: Data.Set.Base.Set Interpreter.Variable
+        [LclId, Str=DmdType]
+        lq_anf__d2kz = Data.Set.Base.insert x lq_anf__d2ky } in
+      GHC.Base.return lq_anf__d2kz;
+    GHC.Types.True ->
+      let {
+        lq_anf__d2kA :: Data.Set.Base.Set Interpreter.Variable
+        [LclId, Str=DmdType]
+        lq_anf__d2kA = Data.Set.Base.empty } in
+      GHC.Base.return lq_anf__d2kA
+  }

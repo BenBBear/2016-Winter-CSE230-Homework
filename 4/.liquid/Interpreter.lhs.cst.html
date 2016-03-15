@@ -1,0 +1,171 @@
+<h1 id="part-3-an-interpreter-for-while">Part 3: An Interpreter for WHILE</h1>
+<pre><span class=hs-linenum>5: </span><span class='hs-keyword'>{-@</span> <span class='hs-conid'>LIQUID</span> <span class='hs-str'>"--no-termination"</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>6: </span><span class='hs-comment'>{-# LANGUAGE FlexibleContexts #-}</span>
+<span class=hs-linenum>7: </span>
+<span class=hs-linenum>8: </span><span class='hs-keyword'>module</span> <span class='hs-conid'>Interpreter</span> <span class='hs-layout'>(</span><span class='hs-varid'>interpret</span><span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<span class=hs-linenum>9: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Control</span><span class='hs-varop'>.</span><span class='hs-conid'>Monad</span><span class='hs-varop'>.</span><span class='hs-conid'>State</span>
+<span class=hs-linenum>10: </span><span class='hs-keyword'>import</span>           <span class='hs-conid'>Prelude</span> <span class='hs-varid'>hiding</span> <span class='hs-layout'>(</span><span class='hs-varid'>lookup</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>11: </span><span class='hs-keyword'>import</span> <span class='hs-keyword'>qualified</span> <span class='hs-conid'>Data</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-keyword'>as</span> <span class='hs-conid'>S</span>
+<span class=hs-linenum>12: </span>
+</pre>
+<p><strong>HINT:</strong> To do this problem, first go through <a href="http://ucsd-progsys.github.io/lh-workshop/05-case-study-eval.html">this case study</a> also included in your tarball as <code>case-study-eval.lhs</code>.</p>
+<p>Next, you will revisit your interpreter for the <em>WHILE</em> language to ensure that execution never fails due to a <em>use-before-definition</em> error.</p>
+<p>Recall that FIXME.</p>
+<p>Programs in the language are simply values of the type</p>
+<pre><span class=hs-linenum>27: </span><span class='hs-keyword'>data</span> <span class='hs-conid'>Statement</span> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>28: </span>    <span class='hs-conid'>Assign</span> <span class='hs-conid'>Variable</span> <span class='hs-conid'>Expression</span>            <span class='hs-comment'>-- x = e</span>
+<span class=hs-linenum>29: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-conid'>IfZ</span>    <span class='hs-conid'>Expression</span> <span class='hs-conid'>Statement</span> <span class='hs-conid'>Statement</span> <span class='hs-comment'>-- if (e) {s1} else {s2}</span>
+<span class=hs-linenum>30: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-conid'>WhileZ</span> <span class='hs-conid'>Expression</span> <span class='hs-conid'>Statement</span>           <span class='hs-comment'>-- while (e) {s}</span>
+<span class=hs-linenum>31: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-conid'>Sequence</span> <span class='hs-conid'>Statement</span> <span class='hs-conid'>Statement</span>          <span class='hs-comment'>-- s1; s2</span>
+<span class=hs-linenum>32: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-conid'>Skip</span>                                  <span class='hs-comment'>-- no-op</span>
+</pre>
+<p>to simplify matters, we assume the branch statement <code>IfZ e s1 s2</code> evaluates <code>e</code> and then executes <code>s1</code> if the value of <code>e</code> equals <code>0</code> and otherwise evaluates <code>s2</code>.</p>
+<p>Thus, the expressions are variables, constants or binary operators applied to sub-expressions</p>
+<pre><span class=hs-linenum>42: </span><span class='hs-keyword'>data</span> <span class='hs-conid'>Expression</span> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>43: </span>    <span class='hs-conid'>Var</span> <span class='hs-conid'>Variable</span>                        <span class='hs-comment'>-- x</span>
+<span class=hs-linenum>44: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-conid'>Val</span> <span class='hs-conid'>Value</span>                           <span class='hs-comment'>-- v</span>
+<span class=hs-linenum>45: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-conid'>Op</span>  <span class='hs-conid'>Bop</span> <span class='hs-conid'>Expression</span> <span class='hs-conid'>Expression</span>
+</pre>
+<p>and binary operators are simply two-ary functions</p>
+<pre><span class=hs-linenum>51: </span><span class='hs-keyword'>data</span> <span class='hs-conid'>Bop</span> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>52: </span>    <span class='hs-conid'>Plus</span>     <span class='hs-comment'>-- (+)  :: Int  -&gt; Int  -&gt; Int</span>
+<span class=hs-linenum>53: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-conid'>Minus</span>    <span class='hs-comment'>-- (-)  :: Int  -&gt; Int  -&gt; Int</span>
+</pre>
+<p>and variables and values are just:</p>
+<pre><span class=hs-linenum>59: </span><span class='hs-keyword'>type</span> <span class='hs-conid'>Variable</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>String</span>
+<span class=hs-linenum>60: </span><span class='hs-keyword'>type</span> <span class='hs-conid'>Value</span>    <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Int</span>
+</pre>
+<h2 id="store">Store</h2>
+<p>We will represent the <em>store</em> i.e. the machine's memory, as a list of <code>Variable</code> - <code>Value</code> pairs:</p>
+<pre><span class=hs-linenum>70: </span><span class='hs-keyword'>type</span> <span class='hs-conid'>Store</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyglyph'>[</span><span class='hs-layout'>(</span><span class='hs-conid'>Variable</span><span class='hs-layout'>,</span> <span class='hs-conid'>Value</span><span class='hs-layout'>)</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>71: </span>
+<span class=hs-linenum>72: </span><span class='hs-definition'>update</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Store</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Variable</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Value</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Store</span> 
+<span class=hs-linenum>73: </span><span class='hs-definition'>update</span> <span class='hs-varid'>st</span> <span class='hs-varid'>x</span> <span class='hs-varid'>v</span> <span class='hs-keyglyph'>=</span> <span class='hs-layout'>(</span><span class='hs-varid'>x</span><span class='hs-layout'>,</span> <span class='hs-varid'>v</span><span class='hs-layout'>)</span> <span class='hs-conop'>:</span> <span class='hs-varid'>st</span>
+<span class=hs-linenum>74: </span>
+<span class=hs-linenum>75: </span><span class='hs-definition'>lookup</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Variable</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Store</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Value</span> 
+<span class=hs-linenum>76: </span><span class='hs-definition'>lookup</span> <span class='hs-varid'>x</span> <span class='hs-layout'>(</span><span class='hs-layout'>(</span><span class='hs-varid'>y</span><span class='hs-layout'>,</span> <span class='hs-varid'>v</span><span class='hs-layout'>)</span> <span class='hs-conop'>:</span> <span class='hs-varid'>st</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>77: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-varid'>x</span> <span class='hs-varop'>==</span> <span class='hs-varid'>y</span>         <span class='hs-keyglyph'>=</span> <span class='hs-varid'>v</span> 
+<span class=hs-linenum>78: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-varid'>otherwise</span>      <span class='hs-keyglyph'>=</span> <span class='hs-varid'>lookup</span> <span class='hs-varid'>x</span> <span class='hs-varid'>st</span>
+<span class=hs-linenum>79: </span><span class='hs-definition'>lookup</span> <span class='hs-varid'>x</span> <span class='hs-conid'>[]</span>        <span class='hs-keyglyph'>=</span> <span class='hs-varid'>impossible</span> <span class='hs-str'>"variable not found"</span>
+</pre>
+<h2 id="evaluation">Evaluation</h2>
+<p>We can now write a function that evaluates <code>Statement</code> in a <code>Store</code> to yield a new <em>updated</em> <code>Store</code>:</p>
+<pre><span class=hs-linenum>89: </span><span class='hs-definition'>evalS</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Store</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Statement</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Store</span>
+<span class=hs-linenum>90: </span>
+<span class=hs-linenum>91: </span><span class='hs-definition'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-conid'>Skip</span>             <span class='hs-keyglyph'>=</span> <span class='hs-varid'>st</span>
+<span class=hs-linenum>92: </span>
+<span class=hs-linenum>93: </span><span class='hs-definition'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-layout'>(</span><span class='hs-conid'>Assign</span> <span class='hs-varid'>x</span> <span class='hs-varid'>e</span> <span class='hs-layout'>)</span>    <span class='hs-keyglyph'>=</span> <span class='hs-varid'>update</span> <span class='hs-varid'>st</span> <span class='hs-varid'>x</span> <span class='hs-varid'>v</span>
+<span class=hs-linenum>94: </span>                            <span class='hs-keyword'>where</span>
+<span class=hs-linenum>95: </span>                              <span class='hs-varid'>v</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>evalE</span> <span class='hs-varid'>st</span> <span class='hs-varid'>e</span>
+<span class=hs-linenum>96: </span>
+<span class=hs-linenum>97: </span><span class='hs-definition'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-layout'>(</span><span class='hs-conid'>IfZ</span> <span class='hs-varid'>e</span> <span class='hs-varid'>s1</span> <span class='hs-varid'>s2</span><span class='hs-layout'>)</span>    <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>if</span> <span class='hs-varid'>v</span> <span class='hs-varop'>==</span> <span class='hs-num'>0</span>
+<span class=hs-linenum>98: </span>                              <span class='hs-keyword'>then</span> <span class='hs-varid'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-varid'>s1</span>
+<span class=hs-linenum>99: </span>                              <span class='hs-keyword'>else</span> <span class='hs-varid'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-varid'>s2</span>
+<span class=hs-linenum>100: </span>                            <span class='hs-keyword'>where</span>
+<span class=hs-linenum>101: </span>                              <span class='hs-varid'>v</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>evalE</span> <span class='hs-varid'>st</span> <span class='hs-varid'>e</span>
+<span class=hs-linenum>102: </span><span class='hs-definition'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-varid'>w</span><span class='hs-keyglyph'>@</span><span class='hs-layout'>(</span><span class='hs-conid'>WhileZ</span> <span class='hs-varid'>e</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span>   <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>if</span> <span class='hs-varid'>v</span> <span class='hs-varop'>==</span> <span class='hs-num'>0</span>
+<span class=hs-linenum>103: </span>                              <span class='hs-keyword'>then</span> <span class='hs-varid'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-layout'>(</span><span class='hs-conid'>Sequence</span> <span class='hs-varid'>s</span> <span class='hs-varid'>w</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>104: </span>                              <span class='hs-keyword'>else</span> <span class='hs-varid'>st</span>
+<span class=hs-linenum>105: </span>                            <span class='hs-keyword'>where</span>
+<span class=hs-linenum>106: </span>                              <span class='hs-varid'>v</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>evalE</span> <span class='hs-varid'>st</span> <span class='hs-varid'>e</span>
+<span class=hs-linenum>107: </span>
+<span class=hs-linenum>108: </span><span class='hs-definition'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-layout'>(</span><span class='hs-conid'>Sequence</span> <span class='hs-varid'>s1</span> <span class='hs-varid'>s2</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>evalS</span> <span class='hs-layout'>(</span><span class='hs-varid'>evalS</span> <span class='hs-varid'>st</span> <span class='hs-varid'>s1</span><span class='hs-layout'>)</span> <span class='hs-varid'>s2</span>
+</pre>
+<p>The above uses a helper that evaluates an <code>Expression</code> in a <code>Store</code> to get a <code>Value</code>:</p>
+<pre><span class=hs-linenum>115: </span><span class='hs-definition'>evalE</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Store</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Expression</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Value</span>
+<span class=hs-linenum>116: </span><span class='hs-definition'>evalE</span> <span class='hs-varid'>st</span> <span class='hs-layout'>(</span><span class='hs-conid'>Var</span> <span class='hs-varid'>x</span><span class='hs-layout'>)</span>      <span class='hs-keyglyph'>=</span> <span class='hs-varid'>lookup</span> <span class='hs-varid'>x</span> <span class='hs-varid'>st</span>
+<span class=hs-linenum>117: </span><span class='hs-definition'>evalE</span> <span class='hs-keyword'>_</span>  <span class='hs-layout'>(</span><span class='hs-conid'>Val</span> <span class='hs-varid'>v</span><span class='hs-layout'>)</span>      <span class='hs-keyglyph'>=</span> <span class='hs-varid'>v</span>
+<span class=hs-linenum>118: </span><span class='hs-definition'>evalE</span> <span class='hs-varid'>st</span> <span class='hs-layout'>(</span><span class='hs-conid'>Op</span> <span class='hs-varid'>o</span> <span class='hs-varid'>e1</span> <span class='hs-varid'>e2</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>evalOp</span> <span class='hs-varid'>o</span> <span class='hs-layout'>(</span><span class='hs-varid'>evalE</span> <span class='hs-varid'>st</span> <span class='hs-varid'>e1</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>evalE</span> <span class='hs-varid'>st</span> <span class='hs-varid'>e2</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>119: </span>
+<span class=hs-linenum>120: </span><span class='hs-definition'>evalOp</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Bop</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Value</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Value</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Value</span>
+<span class=hs-linenum>121: </span><span class='hs-definition'>evalOp</span> <span class='hs-conid'>Plus</span>  <span class='hs-varid'>i</span> <span class='hs-varid'>j</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>i</span> <span class='hs-varop'>+</span> <span class='hs-varid'>j</span>
+<span class=hs-linenum>122: </span><span class='hs-definition'>evalOp</span> <span class='hs-conid'>Minus</span> <span class='hs-varid'>i</span> <span class='hs-varid'>j</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>i</span> <span class='hs-comment'>-</span> <span class='hs-varid'>j</span>
+</pre>
+<h2 id="goal-a-safe-evaluator">GOAL: A Safe Evaluator</h2>
+<p>Our goal is to write an evaluator that <em>never</em> fails due to an undefined variable. This means, we must ensure that the evaluator is never called with <em>malformed</em> programs in which some variable is <em>used-before-being-defined</em>.</p>
+<p>In particular, this corresponds to establishing that the call to impossible <em>never</em> happens at run time, by verifying that the below typechecks:</p>
+<pre><span class=hs-linenum>136: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>impossible</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyword'>{v:</span><span class='hs-conid'>String</span> <span class='hs-keyword'>| false}</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>137: </span><span class='hs-definition'>impossible</span> <span class='hs-varid'>msg</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>error</span> <span class='hs-varid'>msg</span>
+</pre>
+<p>Obviously it is possible to throw an exception if you run <code>evalS</code> with a <em>bad</em> statement. Your task is to complete the implementation of <code>isSafe</code> and add suitable refinement type specifications, such that you can prove that the following <code>interpret</code> function is safe:</p>
+<pre><span class=hs-linenum>146: </span>
+<span class=hs-linenum>147: </span>
+<span class=hs-linenum>148: </span>
+<span class=hs-linenum>149: </span><span class='hs-definition'>interpret</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Statement</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Maybe</span> <span class='hs-conid'>Store</span>
+<span class=hs-linenum>150: </span><span class='hs-definition'>interpret</span> <span class='hs-varid'>s</span> 
+<span class=hs-linenum>151: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-varid'>isSafe</span> <span class='hs-varid'>s</span>  <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Just</span> <span class='hs-layout'>(</span><span class='hs-varid'>evalS</span> <span class='hs-conid'>[]</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span>  <span class='hs-comment'>-- `s` does not use any vars before definition </span>
+<span class=hs-linenum>152: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-varid'>otherwise</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Nothing</span>            <span class='hs-comment'>-- `s` may use some var before definition</span>
+<span class=hs-linenum>153: </span>
+<span class=hs-linenum>154: </span>
+<span class=hs-linenum>155: </span><span class='hs-definition'>initial</span><span class='hs-keyglyph'>::</span> <span class='hs-conid'>State</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>156: </span><span class='hs-definition'>initial</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>return</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>empty</span>
+<span class=hs-linenum>157: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>inline</span> <span class='hs-varid'>isSafe</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>158: </span><span class='hs-definition'>isSafe</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Statement</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Bool</span>
+<span class=hs-linenum>159: </span><span class='hs-definition'>isSafe</span> <span class='hs-varid'>s</span> <span class='hs-keyglyph'>=</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>size</span> <span class='hs-varop'>$</span> <span class='hs-varid'>readS'</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span> <span class='hs-varop'>==</span> <span class='hs-num'>0</span>  
+</pre>
+<pre><span class=hs-linenum>163: </span>
+<span class=hs-linenum>164: </span>
+<span class=hs-linenum>165: </span>
+<span class=hs-linenum>166: </span>                                  
+<span class=hs-linenum>167: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>measure</span> <span class='hs-varid'>readS'</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Statement</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>168: </span>
+<span class=hs-linenum>169: </span><span class='hs-definition'>readS'</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Statement</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span>
+<span class=hs-linenum>170: </span><span class='hs-definition'>readS'</span> <span class='hs-varid'>s</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>a</span>  <span class='hs-keyword'>where</span> <span class='hs-layout'>(</span><span class='hs-varid'>a</span><span class='hs-layout'>,</span> <span class='hs-keyword'>_</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>runState</span> <span class='hs-layout'>(</span><span class='hs-varid'>readS</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>empty</span>
+<span class=hs-linenum>171: </span>
+<span class=hs-linenum>172: </span><span class='hs-comment'>-- one is all variables defined, one is all variables that is not define</span>
+<span class=hs-linenum>173: </span><span class='hs-definition'>readS</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Statement</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-layout'>(</span><span class='hs-conid'>State</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>174: </span><span class='hs-definition'>readS</span> <span class='hs-layout'>(</span><span class='hs-conid'>Assign</span> <span class='hs-varid'>x</span> <span class='hs-varid'>e</span><span class='hs-layout'>)</span>  <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
+<span class=hs-linenum>175: </span>                         <span class='hs-varid'>st</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>get</span>
+<span class=hs-linenum>176: </span>                         <span class='hs-varid'>us</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readE</span> <span class='hs-varid'>e</span> 
+<span class=hs-linenum>177: </span>                         <span class='hs-varid'>put</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>insert</span> <span class='hs-varid'>x</span> <span class='hs-varid'>st</span><span class='hs-layout'>)</span>                          
+<span class=hs-linenum>178: </span>                         <span class='hs-varid'>return</span> <span class='hs-varid'>us</span>
+<span class=hs-linenum>179: </span>                                                         
+<span class=hs-linenum>180: </span><span class='hs-definition'>readS</span> <span class='hs-layout'>(</span><span class='hs-conid'>IfZ</span> <span class='hs-varid'>e</span> <span class='hs-varid'>s1</span> <span class='hs-varid'>s2</span><span class='hs-layout'>)</span>    <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
+<span class=hs-linenum>181: </span>                           <span class='hs-varid'>sue</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readE</span> <span class='hs-varid'>e</span>
+<span class=hs-linenum>182: </span>                           <span class='hs-varid'>sus1</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readS</span> <span class='hs-varid'>s1</span>
+<span class=hs-linenum>183: </span>                           <span class='hs-varid'>sus2</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readS</span> <span class='hs-varid'>s2</span>
+<span class=hs-linenum>184: </span>                           <span class='hs-varid'>return</span> <span class='hs-varop'>$</span> <span class='hs-varid'>sue</span> <span class='hs-varop'>`</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>union</span><span class='hs-varop'>`</span> <span class='hs-varid'>sus1</span> <span class='hs-varop'>`</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>union</span><span class='hs-varop'>`</span> <span class='hs-varid'>sus2</span>
+<span class=hs-linenum>185: </span>  
+<span class=hs-linenum>186: </span>
+<span class=hs-linenum>187: </span><span class='hs-definition'>readS</span> <span class='hs-layout'>(</span><span class='hs-conid'>WhileZ</span> <span class='hs-varid'>e</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span>     <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
+<span class=hs-linenum>188: </span>                           <span class='hs-varid'>sue</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readE</span> <span class='hs-varid'>e</span>
+<span class=hs-linenum>189: </span>                           <span class='hs-varid'>sus</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readS</span> <span class='hs-varid'>s</span>
+<span class=hs-linenum>190: </span>                           <span class='hs-varid'>return</span> <span class='hs-varop'>$</span> <span class='hs-varid'>sue</span> <span class='hs-varop'>`</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>union</span><span class='hs-varop'>`</span> <span class='hs-varid'>sus</span>
+<span class=hs-linenum>191: </span> 
+<span class=hs-linenum>192: </span><span class='hs-definition'>readS</span> <span class='hs-layout'>(</span><span class='hs-conid'>Sequence</span> <span class='hs-varid'>s1</span> <span class='hs-varid'>s2</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
+<span class=hs-linenum>193: </span>                           <span class='hs-varid'>sus1</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readS</span> <span class='hs-varid'>s1</span>
+<span class=hs-linenum>194: </span>                           <span class='hs-varid'>sus2</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readS</span> <span class='hs-varid'>s2</span>
+<span class=hs-linenum>195: </span>                           <span class='hs-varid'>return</span> <span class='hs-varop'>$</span> <span class='hs-varid'>sus1</span> <span class='hs-varop'>`</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>union</span><span class='hs-varop'>`</span> <span class='hs-varid'>sus2</span>
+<span class=hs-linenum>196: </span>                           
+<span class=hs-linenum>197: </span><span class='hs-definition'>readS</span> <span class='hs-conid'>Skip</span>             <span class='hs-keyglyph'>=</span> <span class='hs-varid'>return</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>empty</span>   
+<span class=hs-linenum>198: </span>
+<span class=hs-linenum>199: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>measure</span> <span class='hs-varid'>readE</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>200: </span><span class='hs-definition'>readE</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Expression</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-layout'>(</span><span class='hs-conid'>State</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Variable</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>201: </span><span class='hs-definition'>readE</span> <span class='hs-layout'>(</span><span class='hs-conid'>Var</span> <span class='hs-varid'>x</span><span class='hs-layout'>)</span>          <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
+<span class=hs-linenum>202: </span>                           <span class='hs-varid'>st</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>get</span>
+<span class=hs-linenum>203: </span>                           <span class='hs-keyword'>if</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>member</span> <span class='hs-varid'>x</span> <span class='hs-varid'>st</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>204: </span>                             <span class='hs-keyword'>then</span>
+<span class=hs-linenum>205: </span>                               <span class='hs-varid'>return</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>empty</span>
+<span class=hs-linenum>206: </span>                             <span class='hs-keyword'>else</span>
+<span class=hs-linenum>207: </span>                               <span class='hs-varid'>return</span> <span class='hs-layout'>(</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>insert</span> <span class='hs-varid'>x</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>empty</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>208: </span>
+<span class=hs-linenum>209: </span>                               
+<span class=hs-linenum>210: </span><span class='hs-definition'>readE</span> <span class='hs-layout'>(</span><span class='hs-conid'>Val</span> <span class='hs-varid'>v</span><span class='hs-layout'>)</span>          <span class='hs-keyglyph'>=</span> <span class='hs-varid'>return</span> <span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>empty</span>
+<span class=hs-linenum>211: </span>
+<span class=hs-linenum>212: </span><span class='hs-definition'>readE</span> <span class='hs-layout'>(</span><span class='hs-conid'>Op</span> <span class='hs-varid'>o</span> <span class='hs-varid'>e1</span> <span class='hs-varid'>e2</span><span class='hs-layout'>)</span>     <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
+<span class=hs-linenum>213: </span>                           <span class='hs-varid'>sue1</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readE</span> <span class='hs-varid'>e1</span>
+<span class=hs-linenum>214: </span>                           <span class='hs-varid'>sue2</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>readE</span> <span class='hs-varid'>e2</span>
+<span class=hs-linenum>215: </span>                           <span class='hs-varid'>return</span> <span class='hs-varop'>$</span> <span class='hs-varid'>sue1</span> <span class='hs-varop'>`</span><span class='hs-conid'>S</span><span class='hs-varop'>.</span><span class='hs-varid'>union</span><span class='hs-varop'>`</span> <span class='hs-varid'>sue2</span>                           
+</pre>
+<p>When you are done, <code>liquid Interpreter.lhs</code> should return <code>SAFE</code> and also when you run it in GHCi you should get:</p>
+<pre><span class=hs-linenum>223: </span><span class='hs-definition'>ghci</span><span class='hs-varop'>&gt;</span> <span class='hs-keyword'>let</span> <span class='hs-varid'>okStmt</span> <span class='hs-keyglyph'>=</span> <span class='hs-varop'>...</span>
+<span class=hs-linenum>224: </span><span class='hs-definition'>ghci</span><span class='hs-varop'>&gt;</span> <span class='hs-varid'>interpret</span> <span class='hs-varid'>okStmt</span> 
+<span class=hs-linenum>225: </span><span class='hs-conid'>Just</span> <span class='hs-varop'>...</span>
+<span class=hs-linenum>226: </span>
+<span class=hs-linenum>227: </span><span class='hs-definition'>ghci</span><span class='hs-varop'>&gt;</span> <span class='hs-keyword'>let</span> <span class='hs-varid'>badStmt</span> <span class='hs-keyglyph'>=</span> <span class='hs-varop'>...</span> 
+<span class=hs-linenum>228: </span><span class='hs-definition'>ghci</span><span class='hs-varop'>&gt;</span> <span class='hs-varid'>interpret</span> <span class='hs-varid'>badStmt</span> 
+<span class=hs-linenum>229: </span><span class='hs-conid'>Nothing</span> <span class='hs-varop'>...</span>
+</pre>
+<head>
+<link type='text/css' rel='stylesheet' href='liquid.css' />
+</head>

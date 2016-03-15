@@ -156,12 +156,20 @@ initial:: State (S.Set Variable) (S.Set Variable)
 initial = return S.empty
 {-@ inline isSafe @-}
 isSafe :: Statement -> Bool
-isSafe s = (S.size a) == 0  where (a, _) = runState (readS s) S.empty
+isSafe s = (S.size $ readS' s) == 0  
 \end{code}
 
 \begin{code}
-{-@ measure readS @-}
--- one is all variable defined, one is variable that is not define
+
+
+
+                                  
+{-@ measure readS' :: Statement -> S.Set Variable @-}
+
+readS' :: Statement -> S.Set Variable
+readS' s = a  where (a, _) = runState (readS s) S.empty
+
+-- one is all variables defined, one is all variables that is not define
 readS :: Statement -> (State (S.Set Variable) (S.Set Variable))
 readS (Assign x e)  = do
                          st <- get
